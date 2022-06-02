@@ -43,13 +43,11 @@ try:
 
         # Find closest and furthest pixels: y is left-right, z is up-down (x is forward-back)
         furthest_id = np.argmax(depth_image, keepdims=True)  # find index of furthest pixel
-        furthest_y = furthest_id[0]
-        furthest_z = furthest_id[1]
+        furthest_y, furthest_z = np.unravel_index(furthest_id, (IMG_HEIGHT, IMG_WIDTH))
         furthest = depth_image[furthest_y, furthest_z]  # find depth of furthest pixel
 
         closest_id = np.argmin(depth_image, keepdims=True)  # find index of closest pixel
-        closest_y = closest_id[0]
-        closest_z = closest_id[1]
+        closest_y, closest_z = np.unravel_index(closest_id, (IMG_HEIGHT, IMG_WIDTH))
         closest = depth_image[closest_y, closest_z]  # find depth of closest pixel
 
         # Add circles on closest and furthest points

@@ -32,16 +32,16 @@ try:
         depth_image = np.asanyarray(depth_frame.get_data())
 
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-        depth_colormap = cv2.applyColorMap(
-            cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET
+        depth_colormap = cv.applyColorMap(
+            cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET
         )
 
         depth_colormap_dim = depth_colormap.shape
 
         # Show image
-        cv2.namedWindow("RealSense", cv2.WINDOW_AUTOSIZE)
-        cv2.imshow("RealSense", images)
-        cv2.waitKey(1)
+        cv.namedWindow("RealSense", cv.WINDOW_AUTOSIZE)
+        cv.imshow("RealSense", depth_image)
+        cv.waitKey(1)
 
 finally:
 

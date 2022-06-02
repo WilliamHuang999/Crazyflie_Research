@@ -42,11 +42,11 @@ try:
         depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
 
         # Find closest and furthest pixels: y is left-right, z is up-down (x is forward-back)
-        furthest_id = np.argmax(depth_image, keepdims=True)  # find index of furthest pixel
+        furthest_id = np.argmax(depth_image)  # find index of furthest pixel
         furthest_y, furthest_z = np.unravel_index(furthest_id, (IMG_HEIGHT, IMG_WIDTH))
         furthest = depth_image[furthest_y, furthest_z]  # find depth of furthest pixel
 
-        closest_id = np.argmin(depth_image, keepdims=True)  # find index of closest pixel
+        closest_id = np.argmin(depth_image)  # find index of closest pixel
         closest_y, closest_z = np.unravel_index(closest_id, (IMG_HEIGHT, IMG_WIDTH))
         closest = depth_image[closest_y, closest_z]  # find depth of closest pixel
 

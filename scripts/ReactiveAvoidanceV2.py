@@ -74,7 +74,7 @@ try:
         cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
 
         # Make colormap of middle_depth_averages
-        middle_depths = np.empty((100, IMG_WIDTH))
+        middle_depths = np.empty((IMG_HEIGHT, IMG_WIDTH))
         for i in range(0, IMG_HEIGHT):
             middle_depths[i] = middle_depth_averages
         middle_depths_colormap = cv.applyColorMap(\

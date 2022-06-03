@@ -40,17 +40,21 @@ try:
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
         [IMG_HEIGHT, IMG_WIDTH] = np.shape(depth_image)
+        trimmed_depth_image = depth_image[IMG_HEIGHT/10:IMG_HEIGHT*9/10, \
+                                    IMG_WIDTH/10:IMG_WIDTH*9/10]   #Trim off edges of depth image
+        [TRIMMED_HEIGHT, TRIMMED_WIDTH] = np.shape(trimmed_depth_image)
+        
 
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-        depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
+        depth_colormap = cv.applyColorMap(cv.convertScaleAbs(trimmed_depth_image, alpha=0.03), cv.COLORMAP_JET)
 
         # Find closest and furthest pixels: y is left-right, z is up-down (x is forward-back)
-        furthest_id = np.argmax(depth_image)  # find index of furthest pixel
-        furthest_y, furthest_z = np.unravel_index(furthest_id, (IMG_HEIGHT, IMG_WIDTH))
+        furthest_id = np.argmax(trimmed_depth_image)  # find index of furthest pixel
+        furthest_y, furthest_z = np.unravel_index(furthest_id, (TRIMMED_HEIGHT, TRIMMED_WIDTH))
         furthest = depth_image[furthest_y, furthest_z]  # find depth of furthest pixel
 
-        closest_id = np.argmin(depth_image)  # find index of closest pixel
-        closest_y, closest_z = np.unravel_index(closest_id, (IMG_HEIGHT, IMG_WIDTH))
+        closest_id = np.argmin(trimmed_depth_image)  # find index of closest pixel
+        closest_y, closest_z = np.unravel_index(closest_id, (TRIMMED_HEIGHT, TRIMMED_WIDTH))
         closest = depth_image[closest_y, closest_z]  # find depth of closest pixel
 
         # Add circles on closest and furthest points

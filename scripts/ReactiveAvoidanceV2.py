@@ -41,18 +41,18 @@ try:
         color_image = np.asanyarray(color_frame.get_data())
         [IMG_HEIGHT, IMG_WIDTH] = np.shape(depth_image)
 
-        #Take middle slice of image
+        # Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT/2)-10:(int)(IMG_HEIGHT/2)+10, :]
-        middle_depth = middle_depth * depth_frame.get_units()
-        middle_depth_averages = np.mean(middle_depth, axis = 1)
+        middle_depth_m = middle_depth * depth_frame.get_units() #Convert to meters
+        middle_depth_averages = np.mean(middle_depth_m, axis = 1)
 
-        #Eliminate noise by setting depth ceiling
+        # Eliminate noise by setting depth ceiling
         ceiling = 5
         for depth in middle_depth_averages:
             if depth > ceiling:
                 depth = ceiling
         
-        #Find largest gap
+        # Find largest gap
         count = 0
         longest = -1
         longestStart = -1
@@ -72,6 +72,14 @@ try:
         depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
         depth_colormap_dim = depth_colormap.shape
         cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
+
+        # Make colormap of middle_depth_averages
+        middle_depths = np.empty((IMG_HEIGHT, IMG_WIDTH))
+        for i in range(0, IMG_HEIGHT):
+            middle_depths[i] = middle_depth_averages
+        middle_depths_colormap = cv.applyColorMap(\
+            cv.convertScaleAbs(middle_depths / depth_frame.get_units(), alpha = 0.03), cv.COLORMAP_JET)
+        cv.circle(middle_depths_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
 
         # Show images
         cv.imshow("Original DepthMap", depth_colormap)

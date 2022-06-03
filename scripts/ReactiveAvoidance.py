@@ -57,9 +57,9 @@ try:
         closest_y, closest_z = np.unravel_index(closest_id, (TRIMMED_HEIGHT, TRIMMED_WIDTH))
         closest = depth_image[closest_y, closest_z]  # find depth of closest pixel
 
-        # Add circles on closest and furthest points
-        cv.circle(depth_colormap, (furthest_y, furthest_z), 5, (0, 255, 0), 3)
-        cv.circle(depth_colormap, (closest_y, closest_z), 5, (0, 0, 255), 3)
+        # Add circles on closest and furthest points (BGR)
+        cv.circle(depth_colormap, (furthest_y, furthest_z), 5, (0, 165, 255), 3) #Orange
+        cv.circle(depth_colormap, (closest_y, closest_z), 5, (0, 0, 255), 3) #Red
 
         # y_controller = PID(IMG_WIDTH / 2, 1, 1, 1, 0)
         # z_controller = PID(IMG_HEIGHT / 2, 1, 1, 1, 0)

@@ -44,7 +44,7 @@ try:
         # Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT/2)-10:(int)(IMG_HEIGHT/2)+10, :]
         middle_depth_m = middle_depth * depth_frame.get_units() #Convert to meters
-        middle_depth_averages = np.mean(middle_depth_m, axis = 1)
+        middle_depth_averages = np.mean(middle_depth_m, axis = 0)
 
         # Eliminate noise by setting depth ceiling
         ceiling = 5

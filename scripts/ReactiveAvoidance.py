@@ -46,7 +46,7 @@ try:
                                     (int)(IMG_WIDTH/10):(int)(IMG_WIDTH*9/10)]   #Trim off edges of depth image
         [TRIMMED_HEIGHT, TRIMMED_WIDTH] = np.shape(trimmed_depth_image)
         trimmed_depth_image = cv.convertScaleAbs(trimmed_depth_image, alpha=0.03) #Convert to 8 bit values
-        processed_depth_image = cv.bilateralFilter(trimmed_depth_image, 9, 75, 75) #Noise Reduction
+        processed_depth_image = cv.bilateralFilter(trimmed_depth_image, 9, 120, 120) #Noise Reduction
         
 
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)

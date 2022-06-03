@@ -46,12 +46,13 @@ try:
                                     (int)(IMG_WIDTH/10):(int)(IMG_WIDTH*9/10)]   #Trim off edges of depth image
         [TRIMMED_HEIGHT, TRIMMED_WIDTH] = np.shape(trimmed_depth_image)
         trimmed_depth_image = cv.convertScaleAbs(trimmed_depth_image, alpha=0.03) #Convert to 8 bit values
-        processed_depth_image = cv.bilateralFilter(trimmed_depth_image, 9, 200, 200) #Noise Reduction
+        blur = cv.blur(trimmed_depth_image, (6,6))
+        processed_depth_image = cv.bilateralFilter(blur, 9, 200, 200) #Noise Reduction
         
 
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
         depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
-        blurred_depth_colormap = cv.applyColorMap(processed_depth_image, cv.COLORMAP_JET)
+        processed_color_map = cv.applyColorMap(processed_depth_image, cv.COLORMAP_JET)
 
         # Find closest and furthest pixels: y is left-right, z is up-down (x is forward-back)
         furthest_id = np.argmax(processed_depth_image)  # find index of furthest pixel
@@ -63,8 +64,8 @@ try:
         closest = depth_image[closest_y, closest_z]  # find depth of closest pixel
 
         # Add circles on closest and furthest points (BGR)
-        cv.circle(blurred_depth_colormap, (furthest_y, furthest_z), 10, (0, 0, 0), 3) #Black
-        cv.circle(blurred_depth_colormap, (closest_y, closest_z), 10, (255, 255, 255), 3) #White
+        cv.circle(processed_color_map, (furthest_y, furthest_z), 10, (0, 0, 0), 3) #Black
+        cv.circle(processed_color_map, (closest_y, closest_z), 10, (255, 255, 255), 3) #White
 
         # y_controller = PID(IMG_WIDTH / 2, 1, 1, 1, 0)
         # z_controller = PID(IMG_HEIGHT / 2, 1, 1, 1, 0)

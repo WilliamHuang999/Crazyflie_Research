@@ -50,8 +50,8 @@ try:
         
 
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-        #depth_colormap = cv.applyColorMap(cv.convertScaleAbs(epth_image, alpha=0.03), cv.COLORMAP_JET)
-        depth_colormap = cv.applyColorMap(processed_depth_image, cv.COLORMAP_JET)
+        depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
+        blurred_depth_colormap = cv.applyColorMap(processed_depth_image, cv.COLORMAP_JET)
 
         # Find closest and furthest pixels: y is left-right, z is up-down (x is forward-back)
         furthest_id = np.argmax(processed_depth_image)  # find index of furthest pixel
@@ -76,9 +76,9 @@ try:
 
         depth_colormap_dim = depth_colormap.shape
 
-        # Show image
-        cv.namedWindow("DepthMap", cv.WINDOW_AUTOSIZE)
-        cv.imshow("DepthMap", depth_colormap)
+        # Show images
+        cv.imshow("Original DepthMap", depth_colormap)
+        cv.imshow("Blurred DepthMap", blurred_depth_colormap)
         cv.imshow("RGB", color_image)
 
         cv.waitKey(1)

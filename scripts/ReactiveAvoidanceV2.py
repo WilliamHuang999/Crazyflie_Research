@@ -26,6 +26,8 @@ pipeline.start(config)
 stopDist = 0.5  # Distance in meters away from an object that prevents the drone from moving forward
 lastTime = time.time()
 
+print("test")
+
 try:
     while True:
 

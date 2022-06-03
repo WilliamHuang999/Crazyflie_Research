@@ -86,6 +86,8 @@ try:
         cv.imshow("RGB", color_image)
         cv.imshow("Center Depths", middle_depths_colormap)
 
+        print(middle_depth_averages[IMG_WIDTH/2])
+
         if cv.waitKey(1) == ord('q'):
             break
 

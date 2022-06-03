@@ -45,11 +45,12 @@ try:
         trimmed_depth_image = depth_image[(int)(IMG_HEIGHT/10):(int)(IMG_HEIGHT*9/10), \
                                     (int)(IMG_WIDTH/10):(int)(IMG_WIDTH*9/10)]   #Trim off edges of depth image
         [TRIMMED_HEIGHT, TRIMMED_WIDTH] = np.shape(trimmed_depth_image)
-        trimmed_depth_image = cv.convertScaleAbs(trimmed_depth_image, alpha=(255.0/65535.0)) #Convert to 8 bit values
+        trimmed_depth_image = cv.convertScaleAbs(trimmed_depth_image, alpha=0.03) #Convert to 8 bit values
         processed_depth_image = cv.bilateralFilter(trimmed_depth_image, 5, 75, 75) #Noise Reduction
         
 
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
+        #depth_colormap = cv.applyColorMap(cv.convertScaleAbs(epth_image, alpha=0.03), cv.COLORMAP_JET)
         depth_colormap = cv.applyColorMap(processed_depth_image, cv.COLORMAP_JET)
 
         # Find closest and furthest pixels: y is left-right, z is up-down (x is forward-back)

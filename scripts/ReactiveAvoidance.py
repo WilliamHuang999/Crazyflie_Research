@@ -79,7 +79,7 @@ try:
 
         # Show images
         cv.imshow("Original DepthMap", depth_colormap)
-        cv.imshow("Blurred DepthMap", blurred_depth_colormap)
+        cv.imshow("Blurred DepthMap", processed_color_map)
         cv.imshow("RGB", color_image)
 
         cv.waitKey(1)

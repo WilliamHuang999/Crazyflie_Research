@@ -43,11 +43,11 @@ try:
 
         # Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT/2)-10:(int)(IMG_HEIGHT/2)+10, :]
-        middle_depth_m = middle_depth * depth_frame.get_units() #Convert to meters
-        middle_depth_averages = np.mean(middle_depth_m, axis = 0)
+        middle_depth_averages = np.mean(middle_depth, axis = 0)
 
         # Eliminate noise by setting depth ceiling
-        ceiling = 5
+        ceiling_m = 5 # ceiling in meters
+        ceiling = ceiling_m/depth_frame.get_units() # in RealSense depth units
         for depth in middle_depth_averages:
             if depth > ceiling:
                 depth = ceiling
@@ -74,11 +74,11 @@ try:
         cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
 
         # Make colormap of middle_depth_averages
-        middle_depths = np.empty((IMG_HEIGHT, IMG_WIDTH))
+        middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
         for i in range(0, IMG_HEIGHT):
-            middle_depths[i] = middle_depth_averages
+            middle_depth_average_expanded[i] = middle_depth_averages
         middle_depths_colormap = cv.applyColorMap(\
-            cv.convertScaleAbs(middle_depths / depth_frame.get_units(), alpha = 0.03), cv.COLORMAP_JET)
+            cv.convertScaleAbs(middle_depth_average_expanded, alpha = 0.03), cv.COLORMAP_JET)
         #cv.circle(middle_depths_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
 
         # Show images

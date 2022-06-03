@@ -37,7 +37,7 @@ try:
 
         # Convert image to numpy arrays
         depth_image = np.asanyarray(depth_frame.get_data())
-        color_image = np.asanarray(color_frame.get_data())
+        color_image = np.asanyarray(color_frame.get_data())
         [IMG_HEIGHT, IMG_WIDTH] = np.shape(depth_image)
 
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)

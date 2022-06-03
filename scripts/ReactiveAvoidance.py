@@ -58,8 +58,8 @@ try:
         closest = depth_image[closest_y, closest_z]  # find depth of closest pixel
 
         # Add circles on closest and furthest points (BGR)
-        cv.circle(depth_colormap, (furthest_y, furthest_z), 5, (0, 165, 255), 3) #Orange
-        cv.circle(depth_colormap, (closest_y, closest_z), 5, (0, 0, 255), 3) #Red
+        cv.circle(depth_colormap, (furthest_y, furthest_z), 10, (0, 0, 0), 3) #Black
+        cv.circle(depth_colormap, (closest_y, closest_z), 10, (255, 255, 255), 3) #White
 
         # y_controller = PID(IMG_WIDTH / 2, 1, 1, 1, 0)
         # z_controller = PID(IMG_HEIGHT / 2, 1, 1, 1, 0)

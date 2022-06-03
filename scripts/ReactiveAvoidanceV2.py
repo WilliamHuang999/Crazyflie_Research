@@ -74,16 +74,17 @@ try:
         cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
 
         # Make colormap of middle_depth_averages
-        middle_depths = np.empty((IMG_HEIGHT, IMG_WIDTH))
+        middle_depths = np.empty((100, IMG_WIDTH))
         for i in range(0, IMG_HEIGHT):
             middle_depths[i] = middle_depth_averages
         middle_depths_colormap = cv.applyColorMap(\
             cv.convertScaleAbs(middle_depths / depth_frame.get_units(), alpha = 0.03), cv.COLORMAP_JET)
-        cv.circle(middle_depths_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
+        #cv.circle(middle_depths_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
 
         # Show images
         cv.imshow("Original DepthMap", depth_colormap)
         cv.imshow("RGB", color_image)
+        cv.imshow("Center Depths", middle_depths_colormap)
 
         cv.waitKey(1)
 

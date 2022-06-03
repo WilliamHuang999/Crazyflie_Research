@@ -26,8 +26,6 @@ pipeline.start(config)
 stopDist = 0.5  # Distance in meters away from an object that prevents the drone from moving forward
 lastTime = time.time()
 
-print("test")
-
 try:
     while True:
 
@@ -44,7 +42,7 @@ try:
         [IMG_HEIGHT, IMG_WIDTH] = np.shape(depth_image)
 
         #Take middle slice of image
-        middle_depth = depth_image[IMG_HEIGHT/2-10:IMG_HEIGHT/2+10, :]
+        middle_depth = depth_image[(int)(IMG_HEIGHT/2)-10:(int)(IMG_HEIGHT/2)+10, :]
         middle_depth = middle_depth * depth_frame.get_units()
         print(depth_frame.get_units())
         middle_depth_averages = np.mean(middle_depth, axis = 1)

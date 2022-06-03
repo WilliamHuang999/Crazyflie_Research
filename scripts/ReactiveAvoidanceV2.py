@@ -50,12 +50,29 @@ try:
         #Eliminate noise by setting depth ceiling
         ceiling = 5
         for depth in middle_depth_averages:
-            if depth > 5:
-                depth = 5
+            if depth > ceiling:
+                depth = ceiling
+        
+        #Find largest gap
+        count = 0
+        longest = -1
+        longestStart = -1
+        longestEnd = -1
+        for i in range(0, np.size(middle_depth_averages)):
+            if middle_depth_averages[i] == ceiling:
+                count += 1
+            elif count > longest:
+                longest = count
+                longestEnd = i - 1
+                longestStart = longestEnd - count
+                count = 0
+        gapCenter = (int)((longestStart + longestEnd)/2)
+            
         
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
         depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
         depth_colormap_dim = depth_colormap.shape
+        cv.circle(depth_colormap, (gapCenter, IMG_HEIGHT/2), 10, (0, 0, 0), 3) #Black
 
         # Show images
         cv.imshow("Original DepthMap", depth_colormap)

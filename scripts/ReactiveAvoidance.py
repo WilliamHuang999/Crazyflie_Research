@@ -40,8 +40,8 @@ try:
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
         [IMG_HEIGHT, IMG_WIDTH] = np.shape(depth_image)
-        trimmed_depth_image = depth_image[IMG_HEIGHT/10:IMG_HEIGHT*9/10, \
-                                    IMG_WIDTH/10:IMG_WIDTH*9/10]   #Trim off edges of depth image
+        trimmed_depth_image = depth_image[(int)(IMG_HEIGHT/10):(int)(IMG_HEIGHT*9/10), \
+                                    (int)(IMG_WIDTH/10):(int)(IMG_WIDTH*9/10)]   #Trim off edges of depth image
         [TRIMMED_HEIGHT, TRIMMED_WIDTH] = np.shape(trimmed_depth_image)
         
 

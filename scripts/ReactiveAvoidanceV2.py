@@ -46,11 +46,11 @@ try:
         middle_depth_averages = np.mean(middle_depth, axis = 0)
 
         # Eliminate noise by setting depth floor
-        floor_m = -5 # floor in meters
-        floor = floor_m/depth_frame.get_units() # in RealSense depth units
-        for depth in middle_depth_averages:
-            if depth > floor:
-                depth = floor
+        ceiling_m = 4 # floor in meters
+        ceiling = ceiling_m/depth_frame.get_units() # in RealSense depth units
+        for i in range(0, IMG_WIDTH):
+            if middle_depth_averages[i] > ceiling:
+                middle_depth_averages[i] = ceiling
         
         # Find largest gap
         count = 0
@@ -58,7 +58,7 @@ try:
         longestStart = -1
         longestEnd = -1
         for i in range(0, np.size(middle_depth_averages)):
-            if middle_depth_averages[i] == floor:
+            if middle_depth_averages[i] == ceiling:
                 count += 1
             elif count > longest:
                 longest = count
@@ -86,7 +86,7 @@ try:
         cv.imshow("RGB", color_image)
         cv.imshow("Center Depths", middle_depths_colormap)
 
-        print(middle_depth_averages[IMG_WIDTH/2])
+        #print(middle_depth_averages[(int)(IMG_WIDTH/2)]*depth_frame.get_units())
 
         if cv.waitKey(1) == ord('q'):
             break

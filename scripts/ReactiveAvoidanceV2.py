@@ -67,6 +67,7 @@ try:
                 longestStart = longestEnd - count
                 count = 0
         gapCenter = (int)((longestStart + longestEnd)/2)
+        print(1)
             
         
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)

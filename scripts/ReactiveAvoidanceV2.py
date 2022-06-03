@@ -44,7 +44,6 @@ try:
         #Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT/2)-10:(int)(IMG_HEIGHT/2)+10, :]
         middle_depth = middle_depth * depth_frame.get_units()
-        print(depth_frame.get_units())
         middle_depth_averages = np.mean(middle_depth, axis = 1)
 
         #Eliminate noise by setting depth ceiling
@@ -72,7 +71,7 @@ try:
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
         depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
         depth_colormap_dim = depth_colormap.shape
-        cv.circle(depth_colormap, (gapCenter, IMG_HEIGHT/2), 10, (0, 0, 0), 3) #Black
+        cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
 
         # Show images
         cv.imshow("Original DepthMap", depth_colormap)

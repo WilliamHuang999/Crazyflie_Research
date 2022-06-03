@@ -42,11 +42,11 @@ try:
         [IMG_HEIGHT, IMG_WIDTH] = np.shape(depth_image)
 
         #Processing of depth image
-        trimmed_depth_image = depth_image[(int)(IMG_HEIGHT/10):(int)(IMG_HEIGHT*9/10), \
-                                    (int)(IMG_WIDTH/10):(int)(IMG_WIDTH*9/10)]   #Trim off edges of depth image
+        trimmed_depth_image = depth_image[(int)(IMG_HEIGHT/20):(int)(IMG_HEIGHT*19/20), \
+                                    (int)(IMG_WIDTH/20):(int)(IMG_WIDTH*19/20)]   #Trim off edges of depth image
         [TRIMMED_HEIGHT, TRIMMED_WIDTH] = np.shape(trimmed_depth_image)
         trimmed_depth_image = cv.convertScaleAbs(trimmed_depth_image, alpha=0.03) #Convert to 8 bit values
-        blur = cv.blur(trimmed_depth_image, (6,6))
+        blur = cv.blur(trimmed_depth_image, (15,15))
         processed_depth_image = cv.bilateralFilter(blur, 9, 200, 200) #Noise Reduction
         
 

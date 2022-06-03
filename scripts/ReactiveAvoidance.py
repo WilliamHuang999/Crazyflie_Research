@@ -45,7 +45,7 @@ try:
         trimmed_depth_image = depth_image[(int)(IMG_HEIGHT/10):(int)(IMG_HEIGHT*9/10), \
                                     (int)(IMG_WIDTH/10):(int)(IMG_WIDTH*9/10)]   #Trim off edges of depth image
         [TRIMMED_HEIGHT, TRIMMED_WIDTH] = np.shape(trimmed_depth_image)
-        print(type(trimmed_depth_image[0,0]))
+        trimmed_depth_image = cv.convertScaleAbs(trimmed_depth_image) #Convert to 8 bit values
         proccessed_depth_image = cv.bilateralFilter(trimmed_depth_image, 5, 75, 75) #Noise Reduction
         
 

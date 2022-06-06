@@ -103,7 +103,7 @@ try:
         # Show images
         cv.imshow("Original DepthMap", depth_colormap)
         cv.imshow("RGB", color_image)
-        cv.imshow("Center Depths", middle_depth_average_expanded)
+        cv.imshow("Center Depths", cv.convertScaleAbs(middle_depth_average_expanded, alpha = 0.03))
 
         #print(middle_depth_averages[(int)(IMG_WIDTH/2)]*depth_frame.get_units())
 

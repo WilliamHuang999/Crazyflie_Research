@@ -82,7 +82,7 @@ try:
                 start = end - count
 
                 print("Found")
-                print(start)
+                print(count)
 
                 middle_depth_bw[start:end] = np.ones((1, count))
 

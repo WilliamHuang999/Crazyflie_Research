@@ -66,7 +66,7 @@ try:
         # get black/white image
         middle_depth_bw = np.empty_like(middle_depth_filtered)
         for i in range(0, np.size(middle_depth_filtered)):
-            if middle_depth_filtered > ceiling:
+            if middle_depth_filtered[i] > ceiling:
                 middle_depth_bw = 1
             else:
                 middle_depth_bw = 0

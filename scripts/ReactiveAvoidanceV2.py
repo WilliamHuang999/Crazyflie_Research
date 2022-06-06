@@ -71,10 +71,12 @@ try:
             
         if np.size(target_running_average) < 10: target_running_average.append(gapCenter)
         else:
-            target_running_average = target_running_average[1:].append(gapCenter)
+            target_running_average = target_running_average[1:]
+            print(target_running_average)
+            target_running_average.append(gapCenter)
 
         print(target_running_average)
-        
+
         gapCenterFiltered = (int)(np.mean(target_running_average))
         
         

@@ -78,12 +78,13 @@ try:
         gapCenter = (int)((longestStart + longestEnd)/2)
             
         #Take running average of gapCenter
-        if np.size(target_running_average) < 10: target_running_average.append(gapCenter)
-        else:
-            target_running_average = target_running_average[1:]
-            target_running_average.append(gapCenter)
+        # if np.size(target_running_average) < 10: target_running_average.append(gapCenter)
+        # else:
+        #     target_running_average = target_running_average[1:]
+        #     target_running_average.append(gapCenter)
 
-        gapCenterFiltered = (int)(np.mean(target_running_average))
+        # gapCenterFiltered = (int)(np.mean(target_running_average))
+        gapCenterFiltered = gapCenter
         
         
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)

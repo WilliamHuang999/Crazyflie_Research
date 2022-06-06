@@ -113,11 +113,13 @@ try:
 
         # Make colormap of middle_depth_averages
         middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
+        middle_depth_bw_expanded = middle_depth_average_expanded
         for i in range(0, IMG_HEIGHT):
             middle_depth_average_expanded[i] = middle_depth_filtered
-        middle_depths_colormap = cv.applyColorMap(
-            cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03), cv.COLORMAP_JET
-        )
+            middle_depth_bw_expanded[i] = middle_depth_bw
+        # middle_depths_colormap = cv.applyColorMap(
+        #    cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03), cv.COLORMAP_JET
+        # )
 
         # Show images
         cv.imshow("Original DepthMap", depth_colormap)

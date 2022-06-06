@@ -113,7 +113,7 @@ try:
 
         # Make colormap of middle_depth_averages
         middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
-        middle_depth_bw_expanded = middle_depth_average_expanded
+        middle_depth_bw_expanded = np.empty_like(middle_depth_average_expanded)
         for i in range(0, IMG_HEIGHT):
             middle_depth_average_expanded[i] = middle_depth_filtered
             middle_depth_bw_expanded[i] = middle_depth_bw

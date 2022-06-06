@@ -77,6 +77,11 @@ try:
             if i > averageLength and np.size(middle_depth_bw) - i - 1 > averageLength:
                 newVal = np.sum(middle_depth_bw[i - averageLength : i + averageLength + 1]) / (2 * averageLength + 1)
 
+                if newVal == 0:
+                    newVal = 1
+                elif newVal == 1:
+                    newVal = 0
+
                 # if newVal < 0.5:
                 #     newVal = 0
                 # else:

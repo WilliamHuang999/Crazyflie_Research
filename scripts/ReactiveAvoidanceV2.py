@@ -15,8 +15,10 @@ device = pipeline_profile.get_device()
 device_product_line = str(device.get_info(rs.camera_info.product_line))
 
 # Establish depth stream
-config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 30)
-config.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, 30)
+IMG_HEIGHT, IMG_WIDTH = (720, 1280)
+
+config.enable_stream(rs.stream.depth, IMG_WIDTH, IMG_HEIGHT, rs.format.z16, 30)
+config.enable_stream(rs.stream.color, IMG_WIDTH, IMG_HEIGHT, rs.format.bgr8, 30)
 
 # Start streaming
 pipeline.start(config)
@@ -26,7 +28,7 @@ pipeline.start(config)
 stopDist = 0.5  # Distance in meters away from an object that prevents the drone from moving forward
 lastTime = time.time()
 
-#middle_running_average = np.empty()
+middle_running_average = np.empty(IMG_WIDTH)
 target_running_average = []
 
 try:
@@ -42,23 +44,19 @@ try:
         # Convert image to numpy arrays
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
-        [IMG_HEIGHT, IMG_WIDTH] = np.shape(depth_image)
-
-        print(IMG_HEIGHT)
-        print(IMG_WIDTH)
 
         # Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT/2)-10:(int)(IMG_HEIGHT/2)+10, :]
         middle_depth_averages = np.mean(middle_depth, axis = 0)
 
         
-        # if np.size(middle_running_average[:,0]) < 10: 
-        #     middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
-        # else:
-        #     middle_running_average = middle_running_average[1:,:]
-        #     middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
+        if np.size(middle_running_average[:,0]) < 10: 
+            middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
+        else:
+            middle_running_average = middle_running_average[1:,:]
+            middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
 
-        # middle_depth_filtered = np.mean(middle_running_average, axis = 0)
+        middle_depth_filtered = np.mean(middle_running_average, axis = 0)
         
         
         # Find largest gap above depth ceiling
@@ -69,8 +67,8 @@ try:
         longest = -1
         longestStart = -1
         longestEnd = -1
-        for i in range(0, np.size(middle_depth_averages)):
-            if middle_depth_averages[i] > ceiling:
+        for i in range(0, np.size(middle_depth_filtered)):
+            if middle_depth_filtered[i] > ceiling:
                 count += 1
             elif count > longest:
                 longest = count

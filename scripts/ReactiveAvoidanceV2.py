@@ -26,7 +26,7 @@ pipeline.start(config)
 stopDist = 0.5  # Distance in meters away from an object that prevents the drone from moving forward
 lastTime = time.time()
 
-middle_running_average = []
+middle_running_average = np.empty()
 target_running_average = []
 
 try:
@@ -49,7 +49,7 @@ try:
         middle_depth_averages = np.mean(middle_depth, axis = 0)
 
         
-        if np.size(target_running_average[:,0]) < 10: 
+        if np.size(middle_running_average[:,0]) < 10: 
             middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
         else:
             middle_running_average = middle_running_average[1:,:]

@@ -118,14 +118,12 @@ try:
         middle_depths_colormap = cv.applyColorMap(
             cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03), cv.COLORMAP_JET
         )
-        # cv.circle(middle_depths_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
 
         # Show images
         cv.imshow("Original DepthMap", depth_colormap)
         cv.imshow("RGB", color_image)
         cv.imshow("Center Depths", cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03))
-
-        # print(middle_depth_averages[(int)(IMG_WIDTH/2)]*depth_frame.get_units())
+        cv.imshow("Black White", middle_depth_bw * 255)
 
         if cv.waitKey(1) == ord("q"):
             break

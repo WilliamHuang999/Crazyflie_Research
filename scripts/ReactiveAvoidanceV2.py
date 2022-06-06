@@ -26,6 +26,8 @@ pipeline.start(config)
 stopDist = 0.5  # Distance in meters away from an object that prevents the drone from moving forward
 lastTime = time.time()
 
+target_running_average = []
+
 try:
     while True:
 
@@ -67,11 +69,16 @@ try:
                 count = 0
         gapCenter = (int)((longestStart + longestEnd)/2)
             
+        if np.size(target_running_average) < 10: target_running_average.append(gapCenter)
+        else:
+            target_running_average = target_running_average[1:].append(gapCenter)
+
+        gapCenterFiltered = np.mean(target_running_average)
         
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
         depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
         depth_colormap_dim = depth_colormap.shape
-        cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
+        cv.circle(depth_colormap, (gapCenterFiltered, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
 
         """
         # Make colormap of middle_depth_averages
@@ -97,3 +104,4 @@ finally:
 
     # Stop streaming
     pipeline.stop()
+

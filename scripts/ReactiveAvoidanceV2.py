@@ -81,11 +81,12 @@ try:
                 end = i
                 start = end - count
 
+                print("Found")
+                print(start)
+
                 middle_depth_bw[start:end] = np.ones((1, count))
 
                 count = 0
-
-            print(i)
 
         # Find largest gap above depth ceiling
         count = 0

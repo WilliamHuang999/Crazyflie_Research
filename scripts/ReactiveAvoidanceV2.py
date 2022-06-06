@@ -16,6 +16,7 @@ device_product_line = str(device.get_info(rs.camera_info.product_line))
 
 # Establish depth stream
 IMG_HEIGHT, IMG_WIDTH = (720, 1280)
+FOV = 65
 
 config.enable_stream(rs.stream.depth, IMG_WIDTH, IMG_HEIGHT, rs.format.z16, 30)
 config.enable_stream(rs.stream.color, IMG_WIDTH, IMG_HEIGHT, rs.format.bgr8, 30)
@@ -30,6 +31,9 @@ lastTime = time.time()
 
 middle_running_average = np.empty((1,IMG_WIDTH))
 target_running_average = []
+
+ceiling_m = 2 # ceiling in meters
+meters_per_pixel = 2*ceiling_m/IMG_WIDTH * np.tan(0.5 * np.radians(FOV))
 
 try:
     while True:
@@ -60,9 +64,7 @@ try:
         
         
         # Find largest gap above depth ceiling
-        ceiling_m = 2 # floor in meters
         ceiling = ceiling_m/depth_frame.get_units() # in RealSense depth units
-
         count = 0
         longest = -1
         longestStart = -1
@@ -75,7 +77,13 @@ try:
                 longestEnd = i - 1
                 longestStart = longestEnd - count
                 count = 0
-        gapCenter = (int)((longestStart + longestEnd)/2)
+        width = longest * meters_per_pixel
+
+        if width < 0.5:
+            # stop drone
+            gapCenter = 0
+        else:
+            gapCenter = (int)((longestStart + longestEnd)/2)
 
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
         depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)

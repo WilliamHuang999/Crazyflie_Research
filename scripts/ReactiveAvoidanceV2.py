@@ -82,11 +82,9 @@ try:
                 endDepth = middle_depth_filtered[end]
                 startDepth = middle_depth_filtered[start - 1]
 
-                insert = np.empty((1, count))
                 for i in range(count):
-                    insert[i] = linInterp(startDepth, endDepth, count, i)
-
-                middle_depth_filtered[start:end] = insert
+                    insert = linInterp(startDepth, endDepth, count, i)
+                    middle_depth_filtered[start + i] = insert
 
                 count = 0
 
@@ -101,8 +99,8 @@ try:
                 middle_depth_bw[i] = 65535
                 count += 1
             else:
+                middle_depth_bw[i] = 0
                 if count < longest:
-                    middle_depth_bw[i] = 0
                     longest = count
                     longestEnd = i - 1
                     longestStart = longestEnd - count

@@ -26,7 +26,7 @@ pipeline.start(config)
 stopDist = 0.5  # Distance in meters away from an object that prevents the drone from moving forward
 lastTime = time.time()
 
-middle_running_average = np.empty()
+middle_running_average = []
 target_running_average = []
 
 try:

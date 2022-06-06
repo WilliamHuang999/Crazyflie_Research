@@ -76,21 +76,11 @@ try:
                 longestStart = longestEnd - count
                 count = 0
         gapCenter = (int)((longestStart + longestEnd)/2)
-            
-        #Take running average of gapCenter
-        # if np.size(target_running_average) < 10: target_running_average.append(gapCenter)
-        # else:
-        #     target_running_average = target_running_average[1:]
-        #     target_running_average.append(gapCenter)
 
-        # gapCenterFiltered = (int)(np.mean(target_running_average))
-        gapCenterFiltered = gapCenter
-        
-        
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
         depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
         depth_colormap_dim = depth_colormap.shape
-        cv.circle(depth_colormap, (gapCenterFiltered, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
+        cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
 
         """
         # Make colormap of middle_depth_averages
@@ -104,7 +94,7 @@ try:
 
         # Show images
         cv.imshow("Original DepthMap", depth_colormap)
-        #cv.imshow("RGB", color_image)
+        cv.imshow("RGB", color_image)
         #cv.imshow("Center Depths", middle_depths_colormap)
 
         #print(middle_depth_averages[(int)(IMG_WIDTH/2)]*depth_frame.get_units())

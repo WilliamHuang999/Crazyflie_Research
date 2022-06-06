@@ -4,6 +4,11 @@ from controller import PIDController as PID
 import time
 import numpy as np
 
+
+def linInterp(y1, y2, len, x):
+    return y1 + x * (y2 - y1) / len
+
+
 # Configure depth and color streams
 pipeline = rs.pipeline()
 config = rs.config()
@@ -63,21 +68,46 @@ try:
 
         # Find largest gap above depth ceiling
         ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
+
+        count = 0
+        threshold = 10
+        # get rid of skinny obstacles
+        for i in range(0, np.size(middle_depth_filtered)):
+            if middle_depth_filtered[i] < ceiling:
+                count += 1
+            elif count < threshold:
+                end = i - 1
+                start = end - count
+
+                endDepth = middle_depth_filtered[end]
+                startDepth = middle_depth_filtered[start - 1]
+
+                insert = np.empty((1, count))
+                for i in range(count):
+                    insert[i] = linInterp(startDepth, endDepth, count, i)
+
+                middle_depth_filtered[start:end] = insert
+
+                count = 0
+
         count = 0
         longest = -1
         longestStart = -1
         longestEnd = -1
+        middle_depth_bw = middle_depth_filtered
+        # Find biggest gap and make black/white
         for i in range(0, np.size(middle_depth_filtered)):
-            # make black and white
-            (thresh, middle_depth_bw) = cv.threshold(middle_depth_filtered, 32767, 65535, cv.THRESH_BINARY)
-
             if middle_depth_filtered[i] > ceiling:
                 count += 1
-            elif count > longest:
-                longest = count
-                longestEnd = i - 1
-                longestStart = longestEnd - count
-                count = 0
+                middle_depth_bw[i] = 1
+            else:
+                middle_depth_bw[i] = 0
+                if count < longest:
+                    longest = count
+                    longestEnd = i - 1
+                    longestStart = longestEnd - count
+                    count = 0
+
         width = longest * meters_per_pixel
 
         if width < 0.5:
@@ -104,9 +134,6 @@ try:
         cv.imshow("Original DepthMap", depth_colormap)
         cv.imshow("RGB", color_image)
         cv.imshow("Center Depths", cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03))
-        cv.imshow("BW", middle_depth_bw)
-
-        # print(middle_depth_averages[(int)(IMG_WIDTH/2)]*depth_frame.get_units())
 
         if cv.waitKey(1) == ord("q"):
             break

@@ -77,7 +77,7 @@ try:
         for i in range(0, np.size(middle_depth_bw)):
             if middle_depth_bw[i] == 0:
                 count += 1
-            elif count < threshold:
+            elif count < threshold and count != 0:
                 end = i
                 start = end - count
 

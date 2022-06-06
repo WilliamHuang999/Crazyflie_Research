@@ -46,7 +46,7 @@ try:
         middle_depth_averages = np.mean(middle_depth, axis = 0)
 
         # Eliminate noise by setting depth floor
-        ceiling_m = 4 # floor in meters
+        ceiling_m = 2 # floor in meters
         ceiling = ceiling_m/depth_frame.get_units() # in RealSense depth units
         for i in range(0, IMG_WIDTH):
             if middle_depth_averages[i] > ceiling:
@@ -73,6 +73,7 @@ try:
         depth_colormap_dim = depth_colormap.shape
         cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
 
+        """
         # Make colormap of middle_depth_averages
         middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
         for i in range(0, IMG_HEIGHT):
@@ -80,11 +81,12 @@ try:
         middle_depths_colormap = cv.applyColorMap(\
             cv.convertScaleAbs(middle_depth_average_expanded, alpha = 0.03), cv.COLORMAP_JET)
         #cv.circle(middle_depths_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
+        """
 
         # Show images
         cv.imshow("Original DepthMap", depth_colormap)
-        cv.imshow("RGB", color_image)
-        cv.imshow("Center Depths", middle_depths_colormap)
+        #cv.imshow("RGB", color_image)
+        #cv.imshow("Center Depths", middle_depths_colormap)
 
         #print(middle_depth_averages[(int)(IMG_WIDTH/2)]*depth_frame.get_units())
 

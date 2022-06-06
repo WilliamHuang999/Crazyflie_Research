@@ -71,6 +71,20 @@ try:
             else:
                 middle_depth_bw[i] = 0
 
+        # remove skinny obstacles (shadows)
+        threshold = 10
+        count = 0
+        for i in range(0, np.size(middle_depth_bw)):
+            if middle_depth_bw[i] == 0:
+                count += 1
+            elif count > threshold:
+                end = i - 1
+                start = end - count
+
+                middle_depth_bw[start:end] = 1
+
+                count = 0
+
         # Find largest gap above depth ceiling
         count = 0
         longest = -1

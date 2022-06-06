@@ -85,6 +85,8 @@ try:
 
                 count = 0
 
+            print(i)
+
         # Find largest gap above depth ceiling
         count = 0
         longest = -1

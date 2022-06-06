@@ -74,7 +74,14 @@ try:
         # average
         for i in range(0, np.size(middle_depth_bw)):
             if i > 5 and np.size(middle_depth_bw) - i - 1 > 5:
-                middle_depth_bw[i] = np.sum(middle_depth_bw[i - 5 : i + 6]) / 11
+                newVal = np.sum(middle_depth_bw[i - 5 : i + 6]) / 11
+
+                if newVal < 0.5:
+                    newVal = 0
+                else:
+                    newVal = 1
+
+                middle_depth_bw[i] = newVal
 
         # # remove skinny obstacles (shadows)
         # threshold = 100

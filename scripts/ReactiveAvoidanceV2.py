@@ -77,10 +77,10 @@ try:
             if i > averageLength and np.size(middle_depth_bw) - i - 1 > averageLength:
                 newVal = np.sum(middle_depth_bw[i - averageLength : i + averageLength + 1]) / (2 * averageLength + 1)
 
-                # if newVal < 0.5:
-                #     newVal = 0
-                # else:
-                #     newVal = 1
+                if newVal < 0.8:
+                    newVal = 0
+                else:
+                    newVal = 1
 
                 middle_depth_bw[i] = newVal
 
@@ -107,7 +107,7 @@ try:
         longestStart = -1
         longestEnd = -1
         for i in range(0, np.size(middle_depth_bw)):
-            if middle_depth_bw[i] == 1:
+            if middle_depth_bw[i] > 0.5:
                 count += 1
             elif count > longest:
                 longest = count

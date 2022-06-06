@@ -26,6 +26,7 @@ pipeline.start(config)
 stopDist = 0.5  # Distance in meters away from an object that prevents the drone from moving forward
 lastTime = time.time()
 
+middle_running_average = []
 target_running_average = []
 
 try:
@@ -46,6 +47,15 @@ try:
         # Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT/2)-10:(int)(IMG_HEIGHT/2)+10, :]
         middle_depth_averages = np.mean(middle_depth, axis = 0)
+
+        
+        if np.size(target_running_average[:,0]) < 10: 
+            middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
+        else:
+            middle_running_average = middle_running_average[1:,:]
+            middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
+
+        middle_depth_filtered = np.mean(middle_running_average, axis = 0)
         
         
         # Find largest gap above depth ceiling
@@ -56,8 +66,8 @@ try:
         longest = -1
         longestStart = -1
         longestEnd = -1
-        for i in range(0, np.size(middle_depth_averages)):
-            if middle_depth_averages[i] > ceiling:
+        for i in range(0, np.size(middle_depth_filtered)):
+            if middle_depth_filtered[i] > ceiling:
                 count += 1
             elif count > longest:
                 longest = count
@@ -84,7 +94,7 @@ try:
         # Make colormap of middle_depth_averages
         middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
         for i in range(0, IMG_HEIGHT):
-            middle_depth_average_expanded[i] = middle_depth_averages
+            middle_depth_average_expanded[i] = middle_depth_filtered
         middle_depths_colormap = cv.applyColorMap(\
             cv.convertScaleAbs(middle_depth_average_expanded, alpha = 0.03), cv.COLORMAP_JET)
         #cv.circle(middle_depths_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black

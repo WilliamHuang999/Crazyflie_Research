@@ -76,7 +76,7 @@ try:
             if i > 5 and np.size(middle_depth_bw) - i - 1 > 5:
                 newVal = np.sum(middle_depth_bw[i - 5 : i + 6]) / 11
 
-                if newVal < 0.6:
+                if newVal < 0.5:
                     newVal = 0
                 else:
                     newVal = 1

@@ -71,22 +71,27 @@ try:
             else:
                 middle_depth_bw[i] = 0
 
-        # remove skinny obstacles (shadows)
-        threshold = 100
-        count = 0
+        # average
         for i in range(0, np.size(middle_depth_bw)):
-            if middle_depth_bw[i] == 0:
-                count += 1
-            elif count < threshold and count != 0:
-                end = i
-                start = end - count
+            if i > 5 and np.size(middle_depth_bw) - i - 1 > 5:
+                middle_depth_bw[i] = np.sum(middle_depth_bw[i - 5 : i + 6]) / 11
 
-                print("Found")
-                print(count)
+        # # remove skinny obstacles (shadows)
+        # threshold = 100
+        # count = 0
+        # for i in range(0, np.size(middle_depth_bw)):
+        #     if middle_depth_bw[i] == 0:
+        #         count += 1
+        #     elif count < threshold and count != 0:
+        #         end = i
+        #         start = end - count
 
-                middle_depth_bw[start:end] = np.ones((1, count))
+        #         print("Found")
+        #         print(count)
 
-                count = 0
+        #         middle_depth_bw[start:end] = np.ones((1, count))
+
+        #         count = 0
 
         # Find largest gap above depth ceiling
         count = 0

@@ -98,11 +98,11 @@ try:
         # Find biggest gap and make black/white
         for i in range(0, np.size(middle_depth_filtered)):
             if middle_depth_filtered[i] > ceiling:
+                middle_depth_bw[i] = 65535
                 count += 1
-                middle_depth_bw[i] = 1
             else:
-                middle_depth_bw[i] = 0
                 if count < longest:
+                    middle_depth_bw[i] = 0
                     longest = count
                     longestEnd = i - 1
                     longestStart = longestEnd - count
@@ -121,10 +121,12 @@ try:
         depth_colormap_dim = depth_colormap.shape
         cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT / 2)), 10, (0, 0, 0), 3)  # Black
 
-        # Make colormap of middle_depth_averages
+        # Expand bw, grayscale
         middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
+        middle_depth_bw_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
         for i in range(0, IMG_HEIGHT):
             middle_depth_average_expanded[i] = middle_depth_filtered
+            middle_depth_bw_expanded[i] = middle_depth_bw
         # middle_depths_colormap = cv.applyColorMap(
         #    cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03), cv.COLORMAP_JET
         # )

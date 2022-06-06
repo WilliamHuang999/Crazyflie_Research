@@ -72,7 +72,7 @@ try:
                 middle_depth_bw[i] = 0
 
         # remove skinny obstacles (shadows)
-        threshold = 10
+        threshold = 1
         count = 0
         for i in range(0, np.size(middle_depth_bw)):
             if middle_depth_bw[i] == 0:

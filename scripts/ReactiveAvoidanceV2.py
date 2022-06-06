@@ -69,7 +69,7 @@ try:
         longestEnd = -1
         for i in range(0, np.size(middle_depth_filtered)):
             # make black and white
-            (thresh, middle_depth_bw) = cv.threshold(middle_depth_filtered, 65535, 255, cv.THRESH_BINARY)
+            (thresh, middle_depth_bw) = cv.threshold(middle_depth_filtered, 32767, 65535, cv.THRESH_BINARY)
 
             if middle_depth_filtered[i] > ceiling:
                 count += 1

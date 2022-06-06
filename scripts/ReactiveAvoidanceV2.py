@@ -70,7 +70,7 @@ try:
         ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
 
         count = 0
-        threshold = 10
+        threshold = 100
         # get rid of skinny obstacles
         for i in range(0, np.size(middle_depth_filtered)):
             if middle_depth_filtered[i] < ceiling:

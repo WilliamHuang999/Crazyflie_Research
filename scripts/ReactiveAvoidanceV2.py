@@ -136,7 +136,7 @@ try:
         cv.imshow("Original DepthMap", depth_colormap)
         cv.imshow("RGB", color_image)
         cv.imshow("Center Depths", cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03))
-        cv.imshow("Black and White", middle_depth_bw)
+        cv.imshow("Black and White", middle_depth_bw_expanded)
 
         if cv.waitKey(1) == ord("q"):
             break

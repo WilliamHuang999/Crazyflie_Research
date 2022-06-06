@@ -51,10 +51,10 @@ try:
 
         
         if np.size(middle_running_average[:,0]) < 10: 
-            middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
+            middle_running_average = np.vstack((middle_running_average, middle_depth_averages))
         else:
             middle_running_average = middle_running_average[1:,:]
-            middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
+            middle_running_average = np.vstack((middle_running_average, middle_depth_averages))
 
         middle_depth_filtered = np.mean(middle_running_average, axis = 0)
         

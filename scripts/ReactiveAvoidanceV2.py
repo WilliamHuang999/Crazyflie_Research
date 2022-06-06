@@ -71,6 +71,7 @@ try:
         longestEnd = -1
         for i in range(0, np.size(middle_depth_filtered)):
             if middle_depth_filtered[i] > ceiling:
+                middle_depth_filtered[i] = 255
                 count += 1
             elif count > longest:
                 longest = count
@@ -98,7 +99,6 @@ try:
         middle_depths_colormap = cv.applyColorMap(\
             cv.convertScaleAbs(middle_depth_average_expanded, alpha = 0.03), cv.COLORMAP_JET)
         #cv.circle(middle_depths_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
-        
 
         # Show images
         cv.imshow("Original DepthMap", depth_colormap)

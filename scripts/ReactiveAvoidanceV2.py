@@ -73,7 +73,7 @@ try:
         else:
             target_running_average = target_running_average[1:].append(gapCenter)
 
-        gapCenterFiltered = np.mean(target_running_average)
+        gapCenterFiltered = (int)(np.mean(target_running_average))
         
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
         depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)

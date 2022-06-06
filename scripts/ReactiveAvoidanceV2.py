@@ -81,6 +81,7 @@ try:
                 end = i - 1
                 start = end - count
 
+                print(count)
                 middle_depth_bw[start : end + 1] = np.ones((1, count))
 
                 count = 0

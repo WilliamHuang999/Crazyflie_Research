@@ -72,9 +72,10 @@ try:
                 middle_depth_bw[i] = 0
 
         # average
+        averageLength = 7
         for i in range(0, np.size(middle_depth_bw)):
-            if i > 5 and np.size(middle_depth_bw) - i - 1 > 5:
-                newVal = np.sum(middle_depth_bw[i - 5 : i + 6]) / 11
+            if i > averageLength and np.size(middle_depth_bw) - i - 1 > averageLength:
+                newVal = np.sum(middle_depth_bw[i - averageLength : i + averageLength + 1]) / 2 * averageLength + 1
 
                 if newVal < 0.5:
                     newVal = 0

@@ -69,8 +69,8 @@ try:
         longest = -1
         longestStart = -1
         longestEnd = -1
-        for i in range(0, np.size(middle_depth_filtered)):
-            if middle_depth_filtered[i] > ceiling:
+        for i in range(0, np.size(middle_depth_averages)):
+            if middle_depth_averages[i] > ceiling:
                 count += 1
             elif count > longest:
                 longest = count

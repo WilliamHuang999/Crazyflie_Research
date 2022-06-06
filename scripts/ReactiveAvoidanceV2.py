@@ -44,18 +44,21 @@ try:
         color_image = np.asanyarray(color_frame.get_data())
         [IMG_HEIGHT, IMG_WIDTH] = np.shape(depth_image)
 
+        print(IMG_HEIGHT)
+        print(IMG_WIDTH)
+
         # Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT/2)-10:(int)(IMG_HEIGHT/2)+10, :]
         middle_depth_averages = np.mean(middle_depth, axis = 0)
 
         
-        if np.size(middle_running_average[:,0]) < 10: 
-            middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
-        else:
-            middle_running_average = middle_running_average[1:,:]
-            middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
+        # if np.size(middle_running_average[:,0]) < 10: 
+        #     middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
+        # else:
+        #     middle_running_average = middle_running_average[1:,:]
+        #     middle_running_average = np.vstack(middle_running_average, middle_depth_averages)
 
-        middle_depth_filtered = np.mean(middle_running_average, axis = 0)
+        # middle_depth_filtered = np.mean(middle_running_average, axis = 0)
         
         
         # Find largest gap above depth ceiling

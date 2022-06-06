@@ -72,7 +72,7 @@ try:
                 middle_depth_bw[i] = 0
 
         # remove skinny obstacles (shadows)
-        threshold = 10
+        threshold = 100
         count = 0
         for i in range(0, np.size(middle_depth_bw)):
             if middle_depth_bw[i] == 0:
@@ -81,9 +81,6 @@ try:
                 end = i
                 start = end - count
 
-                print(count)
-                print(start)
-                print(end)
                 middle_depth_bw[start:end] = np.ones((1, count))
 
                 count = 0
@@ -98,7 +95,7 @@ try:
                 count += 1
             elif count > longest:
                 longest = count
-                longestEnd = i - 1
+                longestEnd = i
                 longestStart = longestEnd - count
                 count = 0
         width = longest * meters_per_pixel

@@ -66,7 +66,8 @@ try:
                 count = 0
         gapCenter = (int)((longestStart + longestEnd)/2)
             
-        if np.size(target_running_average) < 20: target_running_average.append(gapCenter)
+        #Take running average of gapCenter
+        if np.size(target_running_average) < 10: target_running_average.append(gapCenter)
         else:
             target_running_average = target_running_average[1:]
             target_running_average.append(gapCenter)

@@ -2,9 +2,9 @@
 
 ## Raspberry Pi Ubuntu 20.04 Installation Guide
 
-Flash an SD card with Ubuntu Server 20.04 using the Raspberry Pi Imager.
+Format an SD card using MS-DOS/FAT32 formatting option using Disk Utility. Flash the card with Ubuntu Server 20.04 using the Raspberry Pi Imager.
 
-Follow the steps in this [guide](https://linuxhint.com/install-ubuntu-desktop-20-04-lts-on-raspberry-pi-4/).
+Follow the steps in this [guide](https://linuxhint.com/install-ubuntu-desktop-20-04-lts-on-raspberry-pi-4/). To connect to servicenet, use `ssid=servicenet` and `key_mgmt=NONE`. Do not provide a `psk` option.
 
 ## Major Dependency Installation Guide
 

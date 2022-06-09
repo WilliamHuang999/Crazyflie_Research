@@ -8,7 +8,7 @@ Follow the steps in this [guide](https://linuxhint.com/install-ubuntu-desktop-20
 
 ## Major Dependency Installation Guide
 
-### Ubuntu
+### Ubuntu (x86)
 
 #### Installing Librealsense
 

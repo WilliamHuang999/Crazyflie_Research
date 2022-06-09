@@ -8,6 +8,30 @@ Follow the steps in this [guide](https://linuxhint.com/install-ubuntu-desktop-20
 
 ## Major Dependency Installation Guide
 
+### Ubuntu (aarch64)
+
+#### Installing Crazyflie Software
+
+##### Install the dependencies from source:
+
+###### cflib
+```
+git clone https://github.com/bitcraze/crazyflie-lib-python.git
+cd crazyflie-lib-python
+sudo pip3 install -e .
+```
+
+###### libusb
+
+```
+git clone https://github.com/karpierz/libusb.git libusb
+python3 -m pip install --editable ./libusb
+```
+
+###### cfclient
+
+##### Follow [these](https://github.com/bitcraze/crazyflie-lib-python/blob/master/docs/installation/usb_permissions.md) instructions to ensure the cf radio will work
+
 ### Ubuntu (x86)
 
 #### Installing Librealsense

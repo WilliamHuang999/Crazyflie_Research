@@ -10,6 +10,22 @@ Follow the steps in this [guide](https://linuxhint.com/install-ubuntu-desktop-20
 
 ### Ubuntu (aarch64)
 
+#### SSH Guide
+
+Run the following commands on the Pi to initialize an SSH server.
+
+```
+sudo apt-get install openssh-server
+sudo systemctl enable ssh
+sudo systemctl start ssh
+```
+
+This server's IP address can be found using `hostname -i`.
+
+SSH into the Pi from a remote terminal using the following command and entering the Pi's password.
+
+`ssh ubunti@[PI's IP ADDRESS]`
+
 #### Installing Crazyflie Software
 
 ##### Install the dependencies from source:

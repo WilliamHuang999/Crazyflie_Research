@@ -8,7 +8,47 @@ Follow the steps in this [guide](https://linuxhint.com/install-ubuntu-desktop-20
 
 ## Major Dependency Installation Guide
 
-### Ubuntu
+### Ubuntu (aarch64)
+
+#### SSH Guide
+
+Run the following commands on the Pi to initialize an SSH server.
+
+```
+sudo apt-get install openssh-server
+sudo systemctl enable ssh
+sudo systemctl start ssh
+```
+
+This server's IP address can be found using `hostname -i`.
+
+SSH into the Pi from a remote terminal using the following command and entering the Pi's password.
+
+`ssh ubunti@[PI's IP ADDRESS]`
+
+#### Installing Crazyflie Software
+
+##### Install the dependencies from source:
+
+###### cflib
+```
+git clone https://github.com/bitcraze/crazyflie-lib-python.git
+cd crazyflie-lib-python
+sudo pip3 install -e .
+```
+
+###### libusb
+
+```
+git clone https://github.com/karpierz/libusb.git libusb
+python3 -m pip install --editable ./libusb
+```
+
+###### cfclient
+
+##### Follow [these](https://github.com/bitcraze/crazyflie-lib-python/blob/master/docs/installation/usb_permissions.md) instructions to ensure the cf radio will work
+
+### Ubuntu (x86)
 
 #### Installing Librealsense
 

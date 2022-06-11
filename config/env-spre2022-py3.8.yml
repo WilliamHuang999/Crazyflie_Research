@@ -1,4 +1,4 @@
-name: spre2022
+name: spre2022-py3.8
 channels:
   - defaults
   - conda-forge

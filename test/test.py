@@ -15,7 +15,8 @@ from cflib.crazyflie.commander import Commander
 from cflib.utils import uri_helper
 
 
-uri = "radio://0/6/2M/"
+uri = "usb://0"
+#uri = "radio://0/6/2M/"
 deck_attached_event = Event()
 
 DEFAULT_HEIGHT = 1
@@ -38,8 +39,9 @@ def take_off_simple(scf):
         time.sleep(3)
         mc.stop()
 
+
 def land_simple(scf):
-    with MotionCommander(scf, default_height = DEFAULT_HEIGHT) as mc:
+    with MotionCommander(scf, default_height=DEFAULT_HEIGHT) as mc:
         mc.land()
 
 
@@ -83,9 +85,10 @@ def hover_and_descend(cf):
         time.sleep(0.1)
     return
 
-def box_sequence(scf, velo = 0.5):
-    mc = MotionCommander(scf, default_height = DEFAULT_HEIGHT)
-    mc.take_off(height = DEFAULT_HEIGHT, velocity = 1)
+
+def box_sequence(scf, velo=0.5):
+    mc = MotionCommander(scf, default_height=DEFAULT_HEIGHT)
+    mc.take_off(height=DEFAULT_HEIGHT, velocity=1)
     time.sleep(0.5)
     mc.forward(1, velo)
     time.sleep(0.5)
@@ -97,8 +100,9 @@ def box_sequence(scf, velo = 0.5):
     time.sleep(0.5)
     mc.stop()
 
+
 def land(scf):
-    mc = MotionCommander(scf, default_height = DEFAULT_HEIGHT)
+    mc = MotionCommander(scf, default_height=DEFAULT_HEIGHT)
     mc.land()
 
 
@@ -125,26 +129,20 @@ if __name__ == "__main__":
 
             cf = scf.cf
 
-            cf.param.add_update_callback(
-                group="deck", name="bcFlow2", cb=param_deck_flow
-            )
+            cf.param.add_update_callback(group="deck", name="bcFlow2", cb=param_deck_flow)
             time.sleep(1)
 
             t = time.time()
             elapsed = time.time() - t
 
-            #ascend_and_hover(cf)
+            # ascend_and_hover(cf)
 
-            #hover_and_descend(cf)
-            #while(elapsed < 10):
+            # hover_and_descend(cf)
+            # while(elapsed < 10):
             #     elapsed = time.time() - t
             #     cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
             #     time.sleep(0.1)
             # hover_and_descend(cf)
 
-            box_sequence(scf, velo = 0.5)
-            #take_off_simple(cf)
-            
-            
-
-
+            # box_sequence(scf, velo = 0.5)
+            # take_off_simple(cf)

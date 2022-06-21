@@ -42,7 +42,7 @@ bash filename
 
 #### Installing Intel Realsense SDK and Python wrapper
 
-Follow the steps in this [guide]([(https://github.com/IntelRealSense/librealsense/blob/c94410a420b74e5fb6a414bd12215c05ddd82b69/doc/installation.md)]. Be sure to run the scripts to set Realsense permissions and the relevant patches. 
+Follow the steps in this [guide](https://github.com/IntelRealSense/librealsense/blob/c94410a420b74e5fb6a414bd12215c05ddd82b69/doc/installation.md). Be sure to run the scripts to set Realsense permissions and the relevant patches. 
 
 Here is a full list of packages we found necessary for installation:
 ```
@@ -56,7 +56,7 @@ sudo apt install libxcursor1 libxcursor-dev
 sudo apt install libudev-dev libgtk-3-dev 
 ```
 
-When running Cmake, use 'cmake ../ -DFORCE_RSUSB_BACKEND=true -DCMAKE_BUILD_TYPE=release -DBUILD_PYTHON_BINDINGS=true` For a full list of cmake options see the [Intel documentation][(https://dev.intelrealsense.com/docs/build-configuration)]. 
+When running Cmake, use 'cmake ../ -DFORCE_RSUSB_BACKEND=true -DCMAKE_BUILD_TYPE=release -DBUILD_PYTHON_BINDINGS=true` For a full list of cmake options see the [Intel documentation](https://dev.intelrealsense.com/docs/build-configuration). 
 
 Troubleshooting for `cmake` step.
 `No CMAKE_CXX_COMPILER`: Running `sudo apt-get install build-essential` should solve the problem.

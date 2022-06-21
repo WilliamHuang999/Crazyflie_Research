@@ -28,7 +28,7 @@ SSH into the Pi from a remote terminal using the following command and entering 
 
 #### Installing Miniconda3
 
-# We do not recommend using conda environments to install packages as there are compatibility issues with aarch64 and PyPi packages. If you get the issue `Illegal Instruction: core dumped` when trying to import a library while running `python3` in a conda environment, this is probably the reason.
+###### We do not recommend using conda environments to install packages as there are compatibility issues with aarch64 and PyPi packages. If you get the issue `Illegal Instruction: core dumped` when trying to import a library while running `python3` in a conda environment, this is probably the reason.
 
 First download the latest shell script from the Miniconda repo. You can check the [repo](https://repo.anaconda.com/miniconda/) for the latest version by scrolling to the bottom. Find the latest version for Linux-aarch64 (replace "Miniconda3-py39_4.9.2-Linux-aarch64.sh" with the newer filename.)
 ```

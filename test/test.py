@@ -14,7 +14,7 @@ from cflib.positioning.motion_commander import MotionCommander
 from cflib.utils import uri_helper
 
 
-uri = "radio://0/6/2M"
+uri = "radio://0/1/2M"
 deck_attached_event = Event()
 
 DEFAULT_HEIGHT = 1

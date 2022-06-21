@@ -102,9 +102,9 @@ if __name__ == "__main__":
 
             cf = scf.cf
 
-            cf.param.add_update_callback(
-                group="deck", name="bcFlow2", cb=param_deck_flow
-            )
+            #cf.param.add_update_callback(
+            #    group="deck", name="bcFlow2", cb=param_deck_flow
+            #)
             time.sleep(1)
 
             t = time.time()

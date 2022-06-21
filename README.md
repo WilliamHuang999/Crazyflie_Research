@@ -58,7 +58,7 @@ sudo apt install libudev-dev libgtk-3-dev
 
 When running Cmake, use 'cmake ../ -DFORCE_RSUSB_BACKEND=true -DCMAKE_BUILD_TYPE=release -DBUILD_PYTHON_BINDINGS=true` For a full list of cmake options see the [Intel documentation](https://dev.intelrealsense.com/docs/build-configuration). 
 
-To use pyrealsense2, copy the `.so` files found in `librealsense/build/python` next to the Python script you want to run. Or copy them to `/usr/lib/python3/dist-packages`.
+To use pyrealsense2, copy the `.so` files found in `librealsense/build/wrappers/python` next to the Python script you want to run. Or copy them to `/usr/lib/python3/dist-packages`.
 
 Troubleshooting for `cmake` step:
 

@@ -26,6 +26,45 @@ SSH into the Pi from a remote terminal using the following command and entering 
 
 `ssh ubunti@[PI's IP ADDRESS]`
 
+#### Installing Miniconda3
+
+# We do not recommend using conda environments to install packages as there are compatibility issues with aarch64 and PyPi packages. If you get the issue `Illegal Instruction: core dumped` when trying to import a library while running `python3` in a conda environment, this is probably the reason.
+
+First download the latest shell script from the Miniconda repo. You can check the [repo](https://repo.anaconda.com/miniconda/) for the latest version by scrolling to the bottom. Find the latest version for Linux-aarch64 (replace "Miniconda3-py39_4.9.2-Linux-aarch64.sh" with the newer filename.)
+```
+wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Linux-aarch64.sh
+```
+Then enter
+```
+sha256sum filename
+bash filename
+```
+
+#### Installing Intel Realsense SDK and Python wrapper
+
+Follow the steps in this [guide]([(https://github.com/IntelRealSense/librealsense/blob/c94410a420b74e5fb6a414bd12215c05ddd82b69/doc/installation.md)]. Be sure to run the scripts to set Realsense permissions and the relevant patches. 
+
+Here is a full list of packages we found necessary for installation:
+```
+sudo apt install cmake git build-essential pkg-config
+sudo apt install libglfw3 libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
+sudo apt install python3.8-dev
+sudo apt install openssl libssl-dev
+sudo apt install libusb-1.0-0-dev
+sudo apt install libcurl4 libcurl4-openssl-dev
+sudo apt install libxcursor1 libxcursor-dev
+sudo apt install libudev-dev libgtk-3-dev 
+```
+
+When running Cmake, use 'cmake ../ -DFORCE_RSUSB_BACKEND=true -DCMAKE_BUILD_TYPE=release -DBUILD_PYTHON_BINDINGS=true` For a full list of cmake options see the [Intel documentation][(https://dev.intelrealsense.com/docs/build-configuration)]. 
+
+Troubleshooting for `cmake` step.
+`No CMAKE_CXX_COMPILER`: Running `sudo apt-get install build-essential` should solve the problem.
+
+`Python config failure`: Try removing the Cmake cache with `rm CMakeCacheText.txt` Otherwise, the issue is probably with the python interpreter. Use the option `-DPYTHON_EXECUTABLE=(path of python interpreter)`. Python 3.8 has been verified to work.
+
+To use pyrealsense2, copy the `.so` files found in `librealsense/build/python` next to the Python script you want to run. Or copy them to `/usr/lib/python3/dist-packages`.
+
 #### Installing Crazyflie Software
 
 ##### Install the dependencies from source:

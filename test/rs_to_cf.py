@@ -110,8 +110,8 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                 if middle_depth_filtered[i] < ceiling:
                     clear = False
                     continue
-
-            if clear:
+                    
+            if True:
                 commander = Commander(cf)
                 commander.send_setpoint(roll=0, yaw=0, pitch=0, thrust=0.5)
 

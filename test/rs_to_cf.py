@@ -80,7 +80,7 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     t = time.time()
     elapsed = time.time() - t
     try:
-        while(elapsed < 2):
+        while(elapsed < 10):
 
             # Get Realsense Data
             frames = pipeline.wait_for_frames()

@@ -114,6 +114,9 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
             if clear:
                 print("Path is clear")
                 cf.commander.send_hover_setpoint(0, 0, 0, 0.2)
+            else:
+                print("Path is not clear")
+                cf.commander.send_stop_setpoint()
 
             elapsed = time.time() - t
             time.sleep(0.1)

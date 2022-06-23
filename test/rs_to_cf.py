@@ -26,7 +26,7 @@ DEFAULT_HEIGHT = 1
 stopDist = 0.5  # Distance in meters away from an object that prevents the drone from moving forward
 lastTime = time.time()
 
-IMG_HEIGHT, IMG_WIDTH = (720, 1280)
+IMG_WIDTH, IMG_HEIGHT = (640, 480)
 FOV = 65
 
 middle_running_average = np.empty((1, IMG_WIDTH))

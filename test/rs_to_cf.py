@@ -12,6 +12,7 @@ import numpy as np
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
+from cflib.crazyflie.commander import Commander
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.positioning.motion_commander import MotionCommander
 from cflib.utils import uri_helper
@@ -60,7 +61,6 @@ def establish_stream():
     device_product_line = str(device.get_info(rs.camera_info.product_line))
 
     config.enable_stream(rs.stream.depth, IMG_WIDTH, IMG_HEIGHT, rs.format.z16, 30)
-    config.enable_stream(rs.stream.color, IMG_WIDTH, IMG_HEIGHT, rs.format.bgr8, 30)
 
     # Start streaming
     pipeline.start(config)
@@ -111,11 +111,16 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
             # Is there clear path in front?
             clear = True
             ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
+            for i in range(IMG_WIDTH/2 - 10, IMG_WIDTH/2 + 10):
+                if middle_depth_filtered[i] < ceiling:
+                    clear = False
+                    continue
 
-
+            if clear:
+                commander = Commander(cf)
+                commander.send_setpoint(roll=0, yaw=0, pitch=0, thrust=0.5)
 
             elapsed = time.time() - t
-            cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
             time.sleep(0.1)
 
     finally:

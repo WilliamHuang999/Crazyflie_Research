@@ -14,7 +14,8 @@ from cflib.positioning.motion_commander import MotionCommander
 from cflib.utils import uri_helper
 
 
-uri = "radio://0/1/2M"
+radio_uri = "radio://0/1/2M"
+usb_uri = "usb://0"
 deck_attached_event = Event()
 
 DEFAULT_HEIGHT = 1
@@ -98,7 +99,7 @@ if __name__ == "__main__":
         print("No Crazyflies found, cannot run example")
     else:
 
-        with SyncCrazyflie(uri, cf=Crazyflie(rw_cache="./cache")) as scf:
+        with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
 
             cf = scf.cf
 
@@ -113,9 +114,9 @@ if __name__ == "__main__":
             #ascend_and_hover(cf)
 
             #hover_and_descend(cf)
-            while(elapsed < 10):
-                elapsed = time.time() - t
-                cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
-                time.sleep(0.1)
+            # while(elapsed < 10):
+            #     elapsed = time.time() - t
+            #     cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
+            #     time.sleep(0.1)
 
 

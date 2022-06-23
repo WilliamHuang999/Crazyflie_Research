@@ -113,7 +113,7 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                     
             if True:
                 commander = Commander(cf)
-                commander.send_setpoint(roll=0, yaw=0, pitch=0, thrust=0.5)
+                commander.send_setpoint(roll=0, yaw=0, pitch=0, thrust=1)
 
             elapsed = time.time() - t
             time.sleep(0.1)

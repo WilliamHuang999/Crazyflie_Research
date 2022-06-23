@@ -113,7 +113,7 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                     
             if clear:
                 print("Path is clear")
-                cf.commander.send_setpoint(roll=0, yaw=0, pitch=0, thrust=1)
+                cf.commander.send_hover_setpoint(0, 0, 0, 0.2)
 
             elapsed = time.time() - t
             time.sleep(0.1)

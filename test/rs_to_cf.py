@@ -80,7 +80,7 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     t = time.time()
     elapsed = time.time() - t
     try:
-        while(elapsed < 10):
+        while(elapsed < 2):
 
             # Get Realsense Data
             frames = pipeline.wait_for_frames()
@@ -113,8 +113,7 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                     
             if clear:
                 print("Path is clear")
-                commander = Commander(cf)
-                commander.send_setpoint(roll=0, yaw=0, pitch=0, thrust=1)
+                cf.commander.send_setpoint(roll=0, yaw=0, pitch=0, thrust=1)
 
             elapsed = time.time() - t
             time.sleep(0.1)

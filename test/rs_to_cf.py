@@ -106,7 +106,7 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
             # Is there clear path in front?
             clear = True
             ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
-            for i in range(IMG_WIDTH/2 - 10, IMG_WIDTH/2 + 10):
+            for i in range((int)(IMG_WIDTH/2 - 10), (int)(IMG_WIDTH/2 + 10)):
                 if middle_depth_filtered[i] < ceiling:
                     clear = False
                     continue

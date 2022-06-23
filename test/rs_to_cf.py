@@ -112,6 +112,7 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                     continue
                     
             if True:
+                print("Path is clear")
                 commander = Commander(cf)
                 commander.send_setpoint(roll=0, yaw=0, pitch=0, thrust=1)
 

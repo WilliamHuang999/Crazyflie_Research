@@ -54,12 +54,6 @@ def establish_stream():
     pipeline = rs.pipeline()
     config = rs.config()
 
-    # Get device product line for setting a supporting resolution
-    pipeline_wrapper = rs.pipeline_wrapper(pipeline)
-    pipeline_profile = config.resolve(pipeline_wrapper)
-    device = pipeline_profile.get_device()
-    device_product_line = str(device.get_info(rs.camera_info.product_line))
-
     config.enable_stream(rs.stream.depth, IMG_WIDTH, IMG_HEIGHT, rs.format.z16, 30)
 
     # Start streaming
@@ -73,6 +67,7 @@ cflib.crtp.init_drivers(enable_debug_driver=False)
 
 #Establish stream
 pipeline = establish_stream()
+print("Stream started")
 
 with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     cf = scf.cf

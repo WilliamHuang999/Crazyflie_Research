@@ -72,7 +72,8 @@ print("Stream started")
 with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     cf = scf.cf
     
-    rm = ReadMem(usb_uri)
+    #rm = ReadMem(usb_uri)
+    cf.param.add_update_callback(group="deck", name="bcFlow2", cb=param_deck_flow)
     time.sleep(1)
 
 

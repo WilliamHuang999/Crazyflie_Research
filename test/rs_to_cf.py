@@ -16,6 +16,7 @@ from cflib.crazyflie.commander import Commander
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.positioning.motion_commander import MotionCommander
 from cflib.utils import uri_helper
+from read_deck_mem import ReadMem
 
 # DRONE PARAMETERS
 radio_uri = "radio://0/1/2M"
@@ -61,7 +62,6 @@ def establish_stream():
 
     return pipeline
 
-
 # Initialize all the CrazyFlie drivers:
 cflib.crtp.init_drivers(enable_debug_driver=False)
 
@@ -71,9 +71,8 @@ print("Stream started")
 
 with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     cf = scf.cf
-    cf.param.add_update_callback(
-        group="deck", name="bcFlow2", cb=param_deck_flow
-    )
+    
+    rm = ReadMem(usb_uri)
     time.sleep(1)
 
 

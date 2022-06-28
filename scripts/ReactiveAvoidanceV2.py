@@ -101,7 +101,14 @@ try:
                 count += 1
             else:
                 middle_depth_bw[i] = 0
-                if count < longest:
+                if count > longest:
+                    longest = count
+                    longestEnd = i - 1
+                    longestStart = longestEnd - count
+                    count = 0
+
+        # Corner case for when the gap never ends
+        if count > longest:
                     longest = count
                     longestEnd = i - 1
                     longestStart = longestEnd - count

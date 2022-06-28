@@ -135,7 +135,7 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                 if middle_depth_filtered[i] > ceiling:
                     count += 1
                 else:
-                    if count < longest:
+                    if count > longest:
                         longest = count
                         longestEnd = i - 1
                         longestStart = longestEnd - count

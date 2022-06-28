@@ -95,9 +95,18 @@ class ReadMem:
 if __name__ == '__main__':
     # URI to the Crazyflie to connect to
     #uri = uri_helper.uri_from_env(default='radio://0/80/2M/E7E7E7E7E7')
-    uri = 'usb://0'
+    uri = 'radio://0/6/2M'
 
     # Initialize the low-level drivers
     cflib.crtp.init_drivers()
+
+     # Scan for Crazyflies in range of the antenna:
+    print("Scanning interfaces for Crazyflies...")
+    available = cflib.crtp.scan_interfaces()
+
+    # List local CrazyFlie devices:
+    print("Crazyflies found:")
+    for i in available:
+        print(i[0])
 
     rm = ReadMem(uri)

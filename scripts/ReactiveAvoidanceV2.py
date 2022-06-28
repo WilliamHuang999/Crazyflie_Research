@@ -140,8 +140,8 @@ try:
         else:
             print(gapCenter)
 
-        if cv.waitKey(1) == ord("q"):
-            break
+        # if cv.waitKey(1) == ord("q"):
+        #     break
 
 finally:
 

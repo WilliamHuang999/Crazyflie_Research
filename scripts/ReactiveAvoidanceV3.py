@@ -74,7 +74,7 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     
     cf.param.add_update_callback(group="deck", name="bcFlow2", cb=param_deck_flow)
     mc = MotionCommander(cf, default_height = DEFAULT_HEIGHT)
-    mc.takeoff()
+    mc.take_off()
     time.sleep(1)
 
 
@@ -166,3 +166,5 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     finally:
         # Stop streaming
         pipeline.stop()
+
+    mc.land()

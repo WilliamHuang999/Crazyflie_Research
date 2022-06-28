@@ -13,18 +13,20 @@ def linInterp(y1, y2, len, x):
 pipeline = rs.pipeline()
 config = rs.config()
 
-# Get device product line for setting a supporting resolution
-pipeline_wrapper = rs.pipeline_wrapper(pipeline)
-pipeline_profile = config.resolve(pipeline_wrapper)
-device = pipeline_profile.get_device()
-device_product_line = str(device.get_info(rs.camera_info.product_line))
+# # Get device product line for setting a supporting resolution
+# pipeline_wrapper = rs.pipeline_wrapper(pipeline)
+# pipeline_profile = config.resolve(pipeline_wrapper)
+# device = pipeline_profile.get_device()
+# device_product_line = str(device.get_info(rs.camera_info.product_line))
+
+visualize = False
 
 # Establish depth stream
 IMG_HEIGHT, IMG_WIDTH = (720, 1280)
 FOV = 65
 
 config.enable_stream(rs.stream.depth, IMG_WIDTH, IMG_HEIGHT, rs.format.z16, 30)
-config.enable_stream(rs.stream.color, IMG_WIDTH, IMG_HEIGHT, rs.format.bgr8, 30)
+if visualize: config.enable_stream(rs.stream.color, IMG_WIDTH, IMG_HEIGHT, rs.format.bgr8, 30)
 
 # Start streaming
 pipeline.start(config)
@@ -39,8 +41,6 @@ target_running_average = []
 
 ceiling_m = 2  # ceiling in meters
 meters_per_pixel = 2 * ceiling_m / IMG_WIDTH * np.tan(0.5 * np.radians(FOV))
-
-visualize = False
 
 try:
     while True:

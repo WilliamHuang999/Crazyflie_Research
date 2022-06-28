@@ -74,6 +74,7 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     
     cf.param.add_update_callback(group="deck", name="bcFlow2", cb=param_deck_flow)
     mc = MotionCommander(cf, default_height = DEFAULT_HEIGHT)
+    mc.takeoff()
     time.sleep(1)
 
 
@@ -145,6 +146,7 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
             if width < 0.5:
                 # stop drone
                 mc.start_linear_motion(0, 0, 0, 0)
+                print("Stop")
                 gapCenter = 0
             else:
                 gapCenter = (int)((longestStart + longestEnd) / 2)
@@ -153,6 +155,7 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                 y = meters_per_pixel * (IMG_WIDTH/2 - gapCenter)
                 vy = (y*SPEED)/(np.sqrt(x^2 + y^2))
                 vx = (x*SPEED)/(np.sqrt(x^2 + y^2))
+                print("vx: ", vx, "    vy: ", vy)
                 mc.start_linear_motion(vx, vy, 0, 0)
 
 

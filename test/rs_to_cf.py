@@ -82,7 +82,7 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     t = time.time()
     elapsed = time.time() - t
     try:
-        while(elapsed < 10):
+        while(elapsed < 20):
 
             # Get Realsense Data
             frames = pipeline.wait_for_frames()

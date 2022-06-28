@@ -130,9 +130,10 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
             longest = -1
             longestStart = -1
             longestEnd = -1
+
             # Find biggest gap
             for i in range(0, np.size(middle_depth_filtered)):
-                if middle_depth_filtered[i] > ceiling:
+                if middle_depth_filtered[i] >= ceiling:
                     count += 1
                 else:
                     if count > longest:
@@ -141,6 +142,14 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                         longestStart = longestEnd - count
                         count = 0
 
+            # Corner case for when the gap reaches the side
+            if count > longest:
+                        longest = count
+                        longestEnd = i - 1
+                        longestStart = longestEnd - count
+                        count = 0
+
+            gapCenter = (int)((longestStart + longestEnd) / 2)
             width = longest * meters_per_pixel
 
             if width < 0.5:

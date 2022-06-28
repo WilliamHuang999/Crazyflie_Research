@@ -130,7 +130,7 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
             longest = -1
             longestStart = -1
             longestEnd = -1
-            # Find biggest gap and make black/white
+            # Find biggest gap
             for i in range(0, np.size(middle_depth_filtered)):
                 if middle_depth_filtered[i] > ceiling:
                     count += 1
@@ -146,7 +146,7 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
             if width < 0.5:
                 # stop drone
                 mc.start_linear_motion(0, 0, 0, 0)
-                print("Stop")
+                print("Stop: longest gap is ", width)
                 gapCenter = 0
             else:
                 gapCenter = (int)((longestStart + longestEnd) / 2)

@@ -120,7 +120,7 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
             else:
                 print("Path is not clear")
                 #cf.commander.send_stop_setpoint()
-                mc.forward(0)
+                mc.back(0.1)
 
             elapsed = time.time() - t
             time.sleep(0.1)

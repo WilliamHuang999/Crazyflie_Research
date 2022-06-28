@@ -96,7 +96,7 @@ try:
         middle_depth_bw = np.empty_like(middle_depth_filtered)
         # Find biggest gap and make black/white
         for i in range(0, np.size(middle_depth_filtered)):
-            if middle_depth_filtered[i] > ceiling:
+            if middle_depth_filtered[i] >= ceiling:
                 middle_depth_bw[i] = 65535
                 count += 1
             else:

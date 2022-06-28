@@ -70,24 +70,24 @@ try:
         # Find largest gap above depth ceiling
         ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
 
-        # count = 0
-        # threshold = 100
-        # # get rid of skinny obstacles
-        # for i in range(0, np.size(middle_depth_filtered)):
-        #     if middle_depth_filtered[i] < ceiling:
-        #         count += 1
-        #     elif count < threshold:
-        #         end = i - 1
-        #         start = end - count
+        count = 0
+        threshold = 100
+        # get rid of skinny obstacles
+        for i in range(0, np.size(middle_depth_filtered)):
+            if middle_depth_filtered[i] < ceiling:
+                count += 1
+            elif count < threshold:
+                end = i - 1
+                start = end - count
 
-        #         endDepth = middle_depth_filtered[end]
-        #         startDepth = middle_depth_filtered[start - 1]
+                endDepth = middle_depth_filtered[end]
+                startDepth = middle_depth_filtered[start - 1]
 
-        #         for i in range(count):
-        #             insert = linInterp(startDepth, endDepth, count, i)
-        #             middle_depth_filtered[start + i] = insert
+                for i in range(count):
+                    insert = linInterp(startDepth, endDepth, count, i)
+                    middle_depth_filtered[start + i] = insert
 
-        #         count = 0
+                count = 0
 
         count = 0
         longest = -1
@@ -116,8 +116,6 @@ try:
 
         gapCenter = (int)((longestStart + longestEnd) / 2)
         width = longest * meters_per_pixel
-        #print(middle_depth_filtered)
-        print(ceiling)
 
         if width < 0.5:
             # stop drone

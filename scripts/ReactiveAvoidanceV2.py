@@ -109,7 +109,8 @@ try:
 
         gapCenter = (int)((longestStart + longestEnd) / 2)
         width = longest * meters_per_pixel
-        print(middle_depth_filtered)
+        #print(middle_depth_filtered)
+        print(ceiling)
 
         if width < 0.5:
             # stop drone

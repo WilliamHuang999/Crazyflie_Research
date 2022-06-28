@@ -158,7 +158,6 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                 print("Stop: longest gap is ", width)
                 gapCenter = 0
             else:
-                gapCenter = (int)((longestStart + longestEnd) / 2)
 
                 x = ceiling_m
                 y = meters_per_pixel * (IMG_WIDTH/2 - gapCenter)

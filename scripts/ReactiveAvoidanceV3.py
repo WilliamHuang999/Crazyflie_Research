@@ -28,7 +28,7 @@ lastTime = time.time()
 
 IMG_WIDTH, IMG_HEIGHT = (640, 480)
 FOV = 65
-SPEED = 0.5
+SPEED = 0.2
 
 middle_running_average = np.empty((1, IMG_WIDTH))
 target_running_average = []

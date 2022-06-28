@@ -19,7 +19,7 @@ from cflib.utils import uri_helper
 from read_deck_mem import ReadMem
 
 # DRONE PARAMETERS
-radio_uri = "radio://0/1/2M"
+radio_uri = "radio://0/6/2M"
 usb_uri = "usb://0"
 deck_attached_event = Event()
 DEFAULT_HEIGHT = 1
@@ -69,11 +69,13 @@ cflib.crtp.init_drivers(enable_debug_driver=False)
 pipeline = establish_stream()
 print("Stream started")
 
-with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
+with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     cf = scf.cf
     
     #rm = ReadMem(usb_uri)
     cf.param.add_update_callback(group="deck", name="bcFlow2", cb=param_deck_flow)
+    mc = MotionCommander(cf)
+    mc.take_off()
     time.sleep(1)
 
 
@@ -113,10 +115,12 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                     
             if clear:
                 print("Path is clear")
-                cf.commander.send_hover_setpoint(0, 0, 0, 0.2)
+                #cf.commander.send_hover_setpoint(0, 0, 0, 0.2)
+                mc.forward(0.1)
             else:
                 print("Path is not clear")
-                cf.commander.send_stop_setpoint()
+                #cf.commander.send_stop_setpoint()
+                mc.forward(0)
 
             elapsed = time.time() - t
             time.sleep(0.1)
@@ -124,3 +128,4 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     finally:
         # Stop streaming
         pipeline.stop()
+        mc.land()

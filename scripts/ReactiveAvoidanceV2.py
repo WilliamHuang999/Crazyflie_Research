@@ -22,7 +22,7 @@ config = rs.config()
 visualize = False
 
 # Establish depth stream
-IMG_HEIGHT, IMG_WIDTH = (720, 1280)
+IMG_WIDTH, IMG_HEIGHT = (640, 360)
 FOV = 65
 
 config.enable_stream(rs.stream.depth, IMG_WIDTH, IMG_HEIGHT, rs.format.z16, 30)

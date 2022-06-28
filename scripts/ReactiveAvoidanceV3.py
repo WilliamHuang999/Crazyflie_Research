@@ -162,8 +162,8 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
 
                 x = ceiling_m
                 y = meters_per_pixel * (IMG_WIDTH/2 - gapCenter)
-                vy = (y*SPEED)/(np.sqrt(x^2 + y^2))
-                vx = (x*SPEED)/(np.sqrt(x^2 + y^2))
+                vy = (y*SPEED)/(np.sqrt(x**2 + y**2))
+                vx = (x*SPEED)/(np.sqrt(x**2 + y**2))
                 print("vx: ", vx, "    vy: ", vy)
                 mc.start_linear_motion(vx, vy, 0, 0)
 

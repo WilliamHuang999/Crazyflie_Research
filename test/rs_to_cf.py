@@ -123,6 +123,7 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                 mc.back(0.1)
 
             elapsed = time.time() - t
+            print(elapsed)
             time.sleep(0.1)
 
     finally:

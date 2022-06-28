@@ -40,19 +40,20 @@ target_running_average = []
 ceiling_m = 2  # ceiling in meters
 meters_per_pixel = 2 * ceiling_m / IMG_WIDTH * np.tan(0.5 * np.radians(FOV))
 
+visualize = False
+
 try:
     while True:
 
         # Wait for a depth frame
         frames = pipeline.wait_for_frames()
         depth_frame = frames.get_depth_frame()
-        color_frame = frames.get_color_frame()
-        if not depth_frame or not color_frame:
-            continue
+        
+        if visualize: color_frame = frames.get_color_frame()
 
         # Convert image to numpy arrays
         depth_image = np.asanyarray(depth_frame.get_data())
-        color_image = np.asanyarray(color_frame.get_data())
+        if visualize: color_image = np.asanyarray(color_frame.get_data())
 
         # Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT / 2) - 10 : (int)(IMG_HEIGHT / 2) + 10, :]
@@ -106,35 +107,38 @@ try:
                     longestStart = longestEnd - count
                     count = 0
 
+        gapCenter = (int)((longestStart + longestEnd) / 2)
         width = longest * meters_per_pixel
 
         if width < 0.5:
             # stop drone
-            gapCenter = 0
+            print("Stop: widest gap: ", width)
+
+        if visualize:
+            # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
+            depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
+            depth_colormap_dim = depth_colormap.shape
+            cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT / 2)), 10, (0, 0, 0), 3)  # Black
+
+            # Expand bw, grayscale
+            middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
+            middle_depth_bw_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
+            for i in range(0, IMG_HEIGHT):
+                middle_depth_average_expanded[i] = middle_depth_filtered
+                middle_depth_bw_expanded[i] = middle_depth_bw
+            # middle_depths_colormap = cv.applyColorMap(
+            #    cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03), cv.COLORMAP_JET
+            # )
+            # cv.circle(middle_depths_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
+
+            # Show images
+            cv.imshow("Original DepthMap", depth_colormap)
+            cv.imshow("RGB", color_image)
+            cv.imshow("Center Depths", cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03))
+            cv.imshow("Black and White", middle_depth_bw_expanded)
+
         else:
-            gapCenter = (int)((longestStart + longestEnd) / 2)
-
-        # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-        depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
-        depth_colormap_dim = depth_colormap.shape
-        cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT / 2)), 10, (0, 0, 0), 3)  # Black
-
-        # Expand bw, grayscale
-        middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
-        middle_depth_bw_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
-        for i in range(0, IMG_HEIGHT):
-            middle_depth_average_expanded[i] = middle_depth_filtered
-            middle_depth_bw_expanded[i] = middle_depth_bw
-        # middle_depths_colormap = cv.applyColorMap(
-        #    cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03), cv.COLORMAP_JET
-        # )
-        # cv.circle(middle_depths_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
-
-        # Show images
-        cv.imshow("Original DepthMap", depth_colormap)
-        cv.imshow("RGB", color_image)
-        cv.imshow("Center Depths", cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03))
-        cv.imshow("Black and White", middle_depth_bw_expanded)
+            print(gapCenter)
 
         if cv.waitKey(1) == ord("q"):
             break

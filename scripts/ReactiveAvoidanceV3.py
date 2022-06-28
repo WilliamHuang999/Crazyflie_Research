@@ -69,7 +69,7 @@ cflib.crtp.init_drivers(enable_debug_driver=False)
 pipeline = establish_stream()
 print("Stream started")
 
-with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
+with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     cf = scf.cf
     
     cf.param.add_update_callback(group="deck", name="bcFlow2", cb=param_deck_flow)

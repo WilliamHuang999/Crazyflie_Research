@@ -116,11 +116,11 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
             if clear:
                 print("Path is clear")
                 #cf.commander.send_hover_setpoint(0, 0, 0, 0.2)
-                mc.forward(0.1)
+                mc.start_linear_motion(0.1, 0, 0, 0)
             else:
                 print("Path is not clear")
                 #cf.commander.send_stop_setpoint()
-                mc.back(0.1)
+                mc.start_linear_motion(-0.1, 0 ,0 ,0)
 
             elapsed = time.time() - t
             print(elapsed)

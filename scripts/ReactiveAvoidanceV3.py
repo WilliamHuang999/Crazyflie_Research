@@ -16,7 +16,6 @@ from cflib.crazyflie.commander import Commander
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.positioning.motion_commander import MotionCommander
 from cflib.utils import uri_helper
-from read_deck_mem import ReadMem
 
 # DRONE PARAMETERS
 radio_uri = "radio://0/6/2M"
@@ -73,7 +72,6 @@ print("Stream started")
 with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     cf = scf.cf
     
-    #rm = ReadMem(usb_uri)
     cf.param.add_update_callback(group="deck", name="bcFlow2", cb=param_deck_flow)
     mc = MotionCommander(cf, default_height = DEFAULT_HEIGHT)
     time.sleep(1)

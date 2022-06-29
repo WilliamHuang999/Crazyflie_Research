@@ -69,7 +69,7 @@ cflib.crtp.init_drivers(enable_debug_driver=False)
 pipeline = establish_stream()
 print("Stream started")
 
-with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
+with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     cf = scf.cf
     
     #rm = ReadMem(usb_uri)
@@ -125,4 +125,4 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
     finally:
         # Stop streaming
         pipeline.stop()
-        mc.land()
+        #mc.land()

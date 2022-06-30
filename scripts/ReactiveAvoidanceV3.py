@@ -107,24 +107,23 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
             # Find largest gap above depth ceiling
             ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
 
-            # count = 0
-            # threshold = 100
-            # # get rid of skinny obstacles
-            # for i in range(0, np.size(middle_depth_filtered)):
-            #     if middle_depth_filtered[i] < ceiling:
-            #         count += 1
-            #     elif count < threshold:
-            #         end = i - 1
-            #         start = end - count
+            # get black/white image
+            middle_depth_bw = np.empty_like(middle_depth_filtered)
+            for i in range(0, np.size(middle_depth_filtered)):
+                if middle_depth_filtered[i] > ceiling:
+                    middle_depth_bw[i] = 1
+                else:
+                    middle_depth_bw[i] = 0
 
-            #         endDepth = middle_depth_filtered[end]
-            #         startDepth = middle_depth_filtered[start - 1]
+            # mean filter
+            averageLength = 9
+            for i in range(0, np.size(middle_depth_bw)):
+                if i > averageLength and np.size(middle_depth_bw) - i - 1 > averageLength:
+                    newVal = np.sum(middle_depth_bw[i - averageLength : i + averageLength + 1]) / (2 * averageLength + 1)
 
-            #         for i in range(count):
-            #             insert = linInterp(startDepth, endDepth, count, i)
-            #             middle_depth_filtered[start + i] = insert
+                    newVal = round(newVal)
 
-            #         count = 0
+                    middle_depth_bw[i] = newVal
 
             count = 0
             longest = -1
@@ -132,8 +131,8 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
             longestEnd = -1
 
             # Find biggest gap
-            for i in range(0, np.size(middle_depth_filtered)):
-                if middle_depth_filtered[i] >= ceiling:
+            for i in range(0, np.size(middle_depth_bw)):
+                if middle_depth_bw[i] >= ceiling:
                     count += 1
                 else:
                     if count > longest:

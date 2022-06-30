@@ -119,7 +119,6 @@ with SyncCrazyflie(usb_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                 cf.commander.send_stop_setpoint()
 
             elapsed = time.time() - t
-            print(elapsed)
             time.sleep(0.1)
 
     finally:

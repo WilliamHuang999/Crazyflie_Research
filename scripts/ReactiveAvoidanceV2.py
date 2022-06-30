@@ -21,26 +21,33 @@ config = rs.config()
 
 visualize = False
 
-# Establish depth stream
-IMG_WIDTH, IMG_HEIGHT = (640, 360)
-FOV = 65
-
-config.enable_stream(rs.stream.depth, IMG_WIDTH, IMG_HEIGHT, rs.format.z16, 30)
-if visualize: config.enable_stream(rs.stream.color, IMG_WIDTH, IMG_HEIGHT, rs.format.bgr8, 30)
+# Camera properties
+IMG_WIDTH, IMG_HEIGHT = (1280, 720)
+DFOV = 65
+HFOV = 69
 
 # Start streaming
+config.enable_stream(rs.stream.depth, IMG_WIDTH, IMG_HEIGHT, rs.format.z16, 30)
+if visualize: config.enable_stream(rs.stream.color, IMG_WIDTH, IMG_HEIGHT, rs.format.bgr8, 30)
 pipeline.start(config)
+
+# More properties
+ceiling_m = 2  # ceiling in meters
+meters_per_pixel = 2 * ceiling_m / IMG_WIDTH * np.tan(0.5 * np.radians(DFOV))
+
+BASELINE = 0.055 # 55mm between left and right imager
+invalid_band_ratio = BASELINE / (2*ceiling_m * np.tan(HFOV/2))
+invalid_band_size = invalid_band_ratio * IMG_WIDTH
 
 # DRONE PARAMETERS
 
 stopDist = 0.5  # Distance in meters away from an object that prevents the drone from moving forward
 lastTime = time.time()
 
-middle_running_average = np.empty((1, IMG_WIDTH))
+middle_running_average = np.empty((1, IMG_WIDTH - 2*invalid_band_size))
 target_running_average = []
 
-ceiling_m = 2  # ceiling in meters
-meters_per_pixel = 2 * ceiling_m / IMG_WIDTH * np.tan(0.5 * np.radians(FOV))
+
 
 try:
     while True:
@@ -55,6 +62,10 @@ try:
         depth_image = np.asanyarray(depth_frame.get_data())
         if visualize: color_image = np.asanyarray(color_frame.get_data())
 
+        # Cut off invalid depth band (and equal width on opposite side)
+        depth_image = depth_image[: , invalid_band_size : IMG_WIDTH - invalid_band_size]
+        IMG_WIDTH = IMG_WIDTH - invalid_band_size * 2
+
         # Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT / 2) - 10 : (int)(IMG_HEIGHT / 2) + 10, :]
         middle_depth_averages = np.mean(middle_depth, axis=0)
@@ -66,8 +77,6 @@ try:
             middle_running_average = middle_running_average[1:, :]
             middle_running_average = np.vstack((middle_running_average, middle_depth_averages))
         middle_depth_filtered = np.mean(middle_running_average, axis=0)
-
-        print(middle_depth_filtered)
 
         ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
 
@@ -122,11 +131,12 @@ try:
                 count = 0
         width = longest * meters_per_pixel
 
+        gapCenter = (int)((longestStart + longestEnd) / 2)
+        print("Gap Center: ", gapCenter)
+        print("Image width: ", IMG_WIDTH)
         if width < 0.5:
             # stop drone
             gapCenter = 0
-        else:
-            gapCenter = (int)((longestStart + longestEnd) / 2)
 
 
         if visualize:

@@ -22,7 +22,7 @@ config = rs.config()
 visualize = False
 
 # Camera properties
-IMG_WIDTH, IMG_HEIGHT = (1280, 720)
+IMG_WIDTH, IMG_HEIGHT = (640, 360)
 DFOV = 65
 HFOV = 69
 

@@ -82,13 +82,12 @@ try:
         ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
 
         # get black/white image
-        middle_depth_bw = middle_depth_filtered > ceiling
-        # middle_depth_bw = np.empty_like(middle_depth_filtered)
-        # for i in range(0, np.size(middle_depth_filtered)):
-        #     if middle_depth_filtered[i] > ceiling:
-        #         middle_depth_bw[i] = 1
-        #     else:
-        #         middle_depth_bw[i] = 0
+        middle_depth_bw = np.empty_like(middle_depth_filtered)
+        for i in range(0, np.size(middle_depth_filtered)):
+            if middle_depth_filtered[i] > ceiling:
+                middle_depth_bw[i] = 1
+            else:
+                middle_depth_bw[i] = 0
 
         # mean filter
         averageLength = 9

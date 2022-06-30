@@ -37,6 +37,7 @@ meters_per_pixel = 2 * ceiling_m / IMG_WIDTH * np.tan(0.5 * np.radians(DFOV))
 
 BASELINE = 0.055 # 55mm between left and right imager
 invalid_band_ratio = BASELINE / (2*ceiling_m * np.tan(HFOV/2))
+print(invalid_band_ratio)
 invalid_band_size = (int)(invalid_band_ratio * IMG_WIDTH)
 TRIMMED_WIDTH = (int) (IMG_WIDTH - 2*invalid_band_size)
 

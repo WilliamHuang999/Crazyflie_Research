@@ -134,6 +134,7 @@ try:
 
         gapCenter = (int)((longestStart + longestEnd) / 2)
         
+        print(middle_depth_filtered)
         print(middle_depth_bw)
         print("Gap Center: ", gapCenter)
         print("Image width: ", TRIMMED_WIDTH)

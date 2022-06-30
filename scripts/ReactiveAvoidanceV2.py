@@ -37,14 +37,15 @@ meters_per_pixel = 2 * ceiling_m / IMG_WIDTH * np.tan(0.5 * np.radians(DFOV))
 
 BASELINE = 0.055 # 55mm between left and right imager
 invalid_band_ratio = BASELINE / (2*ceiling_m * np.tan(HFOV/2))
-invalid_band_size = invalid_band_ratio * IMG_WIDTH
+invalid_band_size = (int)(invalid_band_ratio * IMG_WIDTH)
+TRIMMED_WIDTH = (int) (IMG_WIDTH - 2*invalid_band_size)
 
 # DRONE PARAMETERS
 
 stopDist = 0.5  # Distance in meters away from an object that prevents the drone from moving forward
 lastTime = time.time()
 
-middle_running_average = np.empty((1, IMG_WIDTH - 2*invalid_band_size))
+middle_running_average = np.empty((1, TRIMMED_WIDTH))
 target_running_average = []
 
 
@@ -63,7 +64,7 @@ try:
         if visualize: color_image = np.asanyarray(color_frame.get_data())
 
         # Cut off invalid depth band (and equal width on opposite side)
-        depth_image = depth_image[: , invalid_band_size : IMG_WIDTH - invalid_band_size]
+        depth_image = depth_image[: , invalid_band_size : IMG_WIDTH - 1 - invalid_band_size]
         IMG_WIDTH = IMG_WIDTH - invalid_band_size * 2
 
         # Take middle slice of image
@@ -133,7 +134,7 @@ try:
 
         gapCenter = (int)((longestStart + longestEnd) / 2)
         print("Gap Center: ", gapCenter)
-        print("Image width: ", IMG_WIDTH)
+        print("Image width: ", TRIMMED_WIDTH)
         if width < 0.5:
             # stop drone
             gapCenter = 0
@@ -146,7 +147,7 @@ try:
             cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT / 2)), 10, (0, 0, 0), 3)  # Black
 
             # Make colormap of middle_depth_averages
-            middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
+            middle_depth_average_expanded = np.empty((IMG_HEIGHT, TRIMMED_WIDTH))
             middle_depth_bw_expanded = np.empty_like(middle_depth_average_expanded)
             for i in range(0, IMG_HEIGHT):
                 middle_depth_average_expanded[i] = middle_depth_filtered

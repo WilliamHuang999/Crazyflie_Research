@@ -65,7 +65,7 @@ try:
         if visualize: color_image = np.asanyarray(color_frame.get_data())
 
         # Cut off invalid depth band (and equal width on opposite side)
-        depth_image = depth_image[: , invalid_band_size : IMG_WIDTH - 1 - invalid_band_size]
+        depth_image = depth_image[: , invalid_band_size : IMG_WIDTH  - invalid_band_size]
 
         # Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT / 2) - 10 : (int)(IMG_HEIGHT / 2) + 10, :]

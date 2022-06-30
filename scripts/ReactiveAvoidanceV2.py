@@ -67,17 +67,20 @@ try:
             middle_running_average = np.vstack((middle_running_average, middle_depth_averages))
         middle_depth_filtered = np.mean(middle_running_average, axis=0)
 
+        print(middle_depth_filtered)
+
         ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
 
         # get black/white image
-        middle_depth_bw = np.empty_like(middle_depth_filtered)
-        for i in range(0, np.size(middle_depth_filtered)):
-            if middle_depth_filtered[i] > ceiling:
-                middle_depth_bw[i] = 1
-            else:
-                middle_depth_bw[i] = 0
+        middle_depth_bw = middle_depth_filtered > ceiling
+        # middle_depth_bw = np.empty_like(middle_depth_filtered)
+        # for i in range(0, np.size(middle_depth_filtered)):
+        #     if middle_depth_filtered[i] > ceiling:
+        #         middle_depth_bw[i] = 1
+        #     else:
+        #         middle_depth_bw[i] = 0
 
-        # average
+        # mean filter
         averageLength = 9
         for i in range(0, np.size(middle_depth_bw)):
             if i > averageLength and np.size(middle_depth_bw) - i - 1 > averageLength:
@@ -125,26 +128,28 @@ try:
         else:
             gapCenter = (int)((longestStart + longestEnd) / 2)
 
-        # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-        depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
-        depth_colormap_dim = depth_colormap.shape
-        cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT / 2)), 10, (0, 0, 0), 3)  # Black
 
-        # Make colormap of middle_depth_averages
-        middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
-        middle_depth_bw_expanded = np.empty_like(middle_depth_average_expanded)
-        for i in range(0, IMG_HEIGHT):
-            middle_depth_average_expanded[i] = middle_depth_filtered
-            middle_depth_bw_expanded[i] = middle_depth_bw
-        # middle_depths_colormap = cv.applyColorMap(
-        #    cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03), cv.COLORMAP_JET
-        # )
+        if visualize:
+            # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
+            depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
+            depth_colormap_dim = depth_colormap.shape
+            cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT / 2)), 10, (0, 0, 0), 3)  # Black
 
-        # Show images
-        cv.imshow("Original DepthMap", depth_colormap)
-        cv.imshow("RGB", color_image)
-        cv.imshow("Center Depths", cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03))
-        cv.imshow("Black White", middle_depth_bw_expanded * 255)
+            # Make colormap of middle_depth_averages
+            middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
+            middle_depth_bw_expanded = np.empty_like(middle_depth_average_expanded)
+            for i in range(0, IMG_HEIGHT):
+                middle_depth_average_expanded[i] = middle_depth_filtered
+                middle_depth_bw_expanded[i] = middle_depth_bw
+            # middle_depths_colormap = cv.applyColorMap(
+            #    cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03), cv.COLORMAP_JET
+            # )
+
+            # Show images
+            cv.imshow("Original DepthMap", depth_colormap)
+            cv.imshow("RGB", color_image)
+            cv.imshow("Center Depths", cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03))
+            cv.imshow("Black White", middle_depth_bw_expanded * 255)
 
         if cv.waitKey(1) == ord("q"):
             break

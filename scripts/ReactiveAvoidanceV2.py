@@ -59,96 +59,95 @@ try:
         middle_depth = depth_image[(int)(IMG_HEIGHT / 2) - 10 : (int)(IMG_HEIGHT / 2) + 10, :]
         middle_depth_averages = np.mean(middle_depth, axis=0)
 
+        # Get running average of middle slice
         if np.size(middle_running_average[:, 0]) < 10:
             middle_running_average = np.vstack((middle_running_average, middle_depth_averages))
         else:
             middle_running_average = middle_running_average[1:, :]
             middle_running_average = np.vstack((middle_running_average, middle_depth_averages))
-
         middle_depth_filtered = np.mean(middle_running_average, axis=0)
 
-        # Find largest gap above depth ceiling
         ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
 
-        # count = 0
+        # get black/white image
+        middle_depth_bw = np.empty_like(middle_depth_filtered)
+        for i in range(0, np.size(middle_depth_filtered)):
+            if middle_depth_filtered[i] > ceiling:
+                middle_depth_bw[i] = 1
+            else:
+                middle_depth_bw[i] = 0
+
+        # average
+        averageLength = 9
+        for i in range(0, np.size(middle_depth_bw)):
+            if i > averageLength and np.size(middle_depth_bw) - i - 1 > averageLength:
+                newVal = np.sum(middle_depth_bw[i - averageLength : i + averageLength + 1]) / (2 * averageLength + 1)
+
+                newVal = round(newVal)
+
+                middle_depth_bw[i] = newVal
+
+        # # remove skinny obstacles (shadows)
         # threshold = 100
-        # # get rid of skinny obstacles
-        # for i in range(0, np.size(middle_depth_filtered)):
-        #     if middle_depth_filtered[i] < ceiling:
+        # count = 0
+        # for i in range(0, np.size(middle_depth_bw)):
+        #     if middle_depth_bw[i] == 0:
         #         count += 1
-        #     elif count < threshold:
-        #         end = i - 1
+        #     elif count < threshold and count != 0:
+        #         end = i
         #         start = end - count
 
-        #         endDepth = middle_depth_filtered[end]
-        #         startDepth = middle_depth_filtered[start - 1]
+        #         print("Found")
+        #         print(count)
 
-        #         for i in range(count):
-        #             insert = linInterp(startDepth, endDepth, count, i)
-        #             middle_depth_filtered[start + i] = insert
+        #         middle_depth_bw[start:end] = np.ones((1, count))
 
         #         count = 0
 
+        # Find largest gap above depth ceiling
         count = 0
         longest = -1
         longestStart = -1
         longestEnd = -1
-        middle_depth_bw = np.empty_like(middle_depth_filtered)
-        # Find biggest gap and make black/white
-        for i in range(0, np.size(middle_depth_filtered)):
-            if middle_depth_filtered[i] >= ceiling:
-                middle_depth_bw[i] = 65535
+        for i in range(0, np.size(middle_depth_bw)):
+            if middle_depth_bw[i] > 0.5:
                 count += 1
-            else:
-                middle_depth_bw[i] = 0
-                if count > longest:
-                    longest = count
-                    longestEnd = i - 1
-                    longestStart = longestEnd - count
-                    count = 0
-
-        # Corner case for when the gap never ends
-        if count > longest:
-                    longest = count
-                    longestEnd = i - 1
-                    longestStart = longestEnd - count
-                    count = 0
-
-        gapCenter = (int)((longestStart + longestEnd) / 2)
+            elif count > longest:
+                longest = count
+                longestEnd = i
+                longestStart = longestEnd - count
+                count = 0
         width = longest * meters_per_pixel
 
         if width < 0.5:
             # stop drone
-            print("Stop: widest gap: ", width)
-
-        if visualize:
-            # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-            depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
-            depth_colormap_dim = depth_colormap.shape
-            cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT / 2)), 10, (0, 0, 0), 3)  # Black
-
-            # Expand bw, grayscale
-            middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
-            middle_depth_bw_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
-            for i in range(0, IMG_HEIGHT):
-                middle_depth_average_expanded[i] = middle_depth_filtered
-                middle_depth_bw_expanded[i] = middle_depth_bw
-            # middle_depths_colormap = cv.applyColorMap(
-            #    cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03), cv.COLORMAP_JET
-            # )
-            # cv.circle(middle_depths_colormap, (gapCenter, (int)(IMG_HEIGHT/2)), 10, (0, 0, 0), 3) #Black
-
-            # Show images
-            cv.imshow("Original DepthMap", depth_colormap)
-            cv.imshow("RGB", color_image)
-            cv.imshow("Center Depths", cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03))
-            cv.imshow("Black and White", middle_depth_bw_expanded)
-
+            gapCenter = 0
         else:
-            print(gapCenter)
+            gapCenter = (int)((longestStart + longestEnd) / 2)
 
-        # if cv.waitKey(1) == ord("q"):
-        #     break
+        # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
+        depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
+        depth_colormap_dim = depth_colormap.shape
+        cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT / 2)), 10, (0, 0, 0), 3)  # Black
+
+        # Make colormap of middle_depth_averages
+        middle_depth_average_expanded = np.empty((IMG_HEIGHT, IMG_WIDTH))
+        middle_depth_bw_expanded = np.empty_like(middle_depth_average_expanded)
+        for i in range(0, IMG_HEIGHT):
+            middle_depth_average_expanded[i] = middle_depth_filtered
+            middle_depth_bw_expanded[i] = middle_depth_bw
+        # middle_depths_colormap = cv.applyColorMap(
+        #    cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03), cv.COLORMAP_JET
+        # )
+
+        # Show images
+        cv.imshow("Original DepthMap", depth_colormap)
+        cv.imshow("RGB", color_image)
+        cv.imshow("Center Depths", cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03))
+        cv.imshow("Black White", middle_depth_bw_expanded * 255)
+
+        if cv.waitKey(1) == ord("q"):
+            break
 
 finally:
 

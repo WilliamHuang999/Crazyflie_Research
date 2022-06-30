@@ -11,11 +11,13 @@ from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.positioning.motion_commander import MotionCommander
+from cflib.crazyflie.commander import Commander
 from cflib.utils import uri_helper
 
 
-radio_uri = "radio://0/6/2M"
-usb_uri = "usb://0"
+uri = "usb://0"
+#uri = "radio://0/6/2M/"
+
 deck_attached_event = Event()
 
 DEFAULT_HEIGHT = 1
@@ -38,6 +40,11 @@ def take_off_simple(scf):
     with MotionCommander(scf, default_height=DEFAULT_HEIGHT) as mc:
         time.sleep(3)
         mc.stop()
+
+
+def land_simple(scf):
+    with MotionCommander(scf, default_height=DEFAULT_HEIGHT) as mc:
+        mc.land()
 
 
 # commands the drone to move forward, turn 180 deg, then move forward more (in the other direction)
@@ -81,6 +88,26 @@ def hover_and_descend(cf):
     return
 
 
+def box_sequence(scf, velo=0.5):
+    mc = MotionCommander(scf, default_height=DEFAULT_HEIGHT)
+    mc.take_off(height=DEFAULT_HEIGHT, velocity=1)
+    time.sleep(0.5)
+    mc.forward(1, velo)
+    time.sleep(0.5)
+    mc.left(1, velo)
+    time.sleep(0.5)
+    mc.back(1, velo)
+    time.sleep(0.5)
+    mc.right(1, velo)
+    time.sleep(0.5)
+    mc.stop()
+
+
+def land(scf):
+    mc = MotionCommander(scf, default_height=DEFAULT_HEIGHT)
+    mc.land()
+
+
 if __name__ == "__main__":
 
     # Initialize all the CrazyFlie drivers:
@@ -104,20 +131,20 @@ if __name__ == "__main__":
 
             cf = scf.cf
 
-            cf.param.add_update_callback(
-                group="deck", name="bcFlow2", cb=param_deck_flow
-            )
+            cf.param.add_update_callback(group="deck", name="bcFlow2", cb=param_deck_flow)
             time.sleep(1)
 
             t = time.time()
             elapsed = time.time() - t
 
-            #ascend_and_hover(cf)
+            # ascend_and_hover(cf)
 
-            #hover_and_descend(cf)
-            while(elapsed < 10):
-                elapsed = time.time() - t
-                cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
-                time.sleep(0.1)
+            # hover_and_descend(cf)
+            # while(elapsed < 10):
+            #     elapsed = time.time() - t
+            #     cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
+            #     time.sleep(0.1)
+            # hover_and_descend(cf)
 
-
+            # box_sequence(scf, velo = 0.5)
+            # take_off_simple(cf)

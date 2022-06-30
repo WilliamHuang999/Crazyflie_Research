@@ -1,0 +1,33 @@
+menu "Power management configuration"
+
+config PM_AUTO_SHUTDOWN
+    bool "Enable automatic shutdown"
+    default n
+    help
+        The power management subsystem can automatically shutdown the system.
+        The shutdown time in minutes is defined in platform_defaults_* for
+        the specific platform and is the time since the last radio communication
+        occured.
+
+endmenu
+
+menu "Communication"
+
+config CRTP_OVER_UART2
+    bool "Move CRTP communication to UART2 instead of over radio"
+    default n
+    help
+        The CRTP (Crazy Real Time Protocol) communication is normally
+        sent over the radio link (via Syslink). By enabling this the
+        communication will instead be sent over UART2 to communicate
+        with e.g. a companion computer instead.
+
+config CRTP_OVER_UART2_BAUDRATE
+    int "CRTP over UART2 baudrate"
+    depends on CRTP_OVER_UART2
+    range 9600 2000000
+    default 512000
+    help
+        Uart baudrate to be used.
+        
+endmenu

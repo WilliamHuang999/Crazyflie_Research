@@ -9,6 +9,7 @@ from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.positioning.motion_commander import MotionCommander
+from cflib.crazyflie.commander import Commander
 from cflib.utils import uri_helper
 from cflib.crazyflie.swarm import Swarm, CachedCfFactory
 

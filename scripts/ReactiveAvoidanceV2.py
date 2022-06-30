@@ -4,22 +4,29 @@ from controller import PIDController as PID
 import time
 import numpy as np
 
+
+def linInterp(y1, y2, len, x):
+    return y1 + x * (y2 - y1) / len
+
+
 # Configure depth and color streams
 pipeline = rs.pipeline()
 config = rs.config()
 
-# Get device product line for setting a supporting resolution
-pipeline_wrapper = rs.pipeline_wrapper(pipeline)
-pipeline_profile = config.resolve(pipeline_wrapper)
-device = pipeline_profile.get_device()
-device_product_line = str(device.get_info(rs.camera_info.product_line))
+# # Get device product line for setting a supporting resolution
+# pipeline_wrapper = rs.pipeline_wrapper(pipeline)
+# pipeline_profile = config.resolve(pipeline_wrapper)
+# device = pipeline_profile.get_device()
+# device_product_line = str(device.get_info(rs.camera_info.product_line))
+
+visualize = False
 
 # Establish depth stream
-IMG_HEIGHT, IMG_WIDTH = (720, 1280)
+IMG_WIDTH, IMG_HEIGHT = (640, 360)
 FOV = 65
 
 config.enable_stream(rs.stream.depth, IMG_WIDTH, IMG_HEIGHT, rs.format.z16, 30)
-config.enable_stream(rs.stream.color, IMG_WIDTH, IMG_HEIGHT, rs.format.bgr8, 30)
+if visualize: config.enable_stream(rs.stream.color, IMG_WIDTH, IMG_HEIGHT, rs.format.bgr8, 30)
 
 # Start streaming
 pipeline.start(config)
@@ -41,13 +48,12 @@ try:
         # Wait for a depth frame
         frames = pipeline.wait_for_frames()
         depth_frame = frames.get_depth_frame()
-        color_frame = frames.get_color_frame()
-        if not depth_frame or not color_frame:
-            continue
+        
+        if visualize: color_frame = frames.get_color_frame()
 
         # Convert image to numpy arrays
         depth_image = np.asanyarray(depth_frame.get_data())
-        color_image = np.asanyarray(color_frame.get_data())
+        if visualize: color_image = np.asanyarray(color_frame.get_data())
 
         # Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT / 2) - 10 : (int)(IMG_HEIGHT / 2) + 10, :]

@@ -17,6 +17,7 @@ from cflib.utils import uri_helper
 
 uri = "usb://0"
 #uri = "radio://0/6/2M/"
+
 deck_attached_event = Event()
 
 DEFAULT_HEIGHT = 1
@@ -31,6 +32,7 @@ def param_deck_flow(_, value_str):
         print("Deck is attached!")
     else:
         print("Deck is NOT attached!")
+
 
 
 # commands the drone to take off and then land after 3 seconds
@@ -125,7 +127,7 @@ if __name__ == "__main__":
         print("No Crazyflies found, cannot run example")
     else:
 
-        with SyncCrazyflie(uri, cf=Crazyflie(rw_cache="./cache")) as scf:
+        with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
 
             cf = scf.cf
 

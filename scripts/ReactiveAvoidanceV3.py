@@ -103,6 +103,7 @@ with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
                 middle_running_average = np.vstack((middle_running_average, middle_depth_averages))
             middle_depth_filtered = np.mean(middle_running_average, axis=0)
 
+            print(middle_depth_filtered)
 
             # Find largest gap above depth ceiling
             ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units

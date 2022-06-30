@@ -67,7 +67,7 @@ config DECK_BIGQUAD
 config DECK_BIGQUAD_ENABLE
     bool "Enable Bigquad deck capabilities"
     depends on DECK_BIGQUAD
-    default n
+    default y
 
 config DECK_BIGQUAD_ENABLE_OSD
     depends on DECK_BIGQUAD_ENABLE

@@ -133,7 +133,7 @@ try:
         # Corner case for when the gap reaches the side
         if count > longest:
             longest = count
-            longestEnd = i - 1
+            longestEnd = np.size(middle_depth_bw)
             longestStart = longestEnd - count
             count = 0
                 

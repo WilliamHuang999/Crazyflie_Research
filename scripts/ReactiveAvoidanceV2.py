@@ -131,11 +131,11 @@ try:
                 longestStart = longestEnd - count
                 count = 0
         # Corner case for when the gap reaches the side
-            if count > longest:
-                        longest = count
-                        longestEnd = i - 1
-                        longestStart = longestEnd - count
-                        count = 0
+        if count > longest:
+            longest = count
+            longestEnd = i - 1
+            longestStart = longestEnd - count
+            count = 0
                 
         width = longest * meters_per_pixel
 

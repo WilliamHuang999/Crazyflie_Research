@@ -19,7 +19,7 @@ config = rs.config()
 # device = pipeline_profile.get_device()
 # device_product_line = str(device.get_info(rs.camera_info.product_line))
 
-visualize = False
+visualize = True
 
 # Camera properties
 IMG_WIDTH, IMG_HEIGHT = (640, 360)

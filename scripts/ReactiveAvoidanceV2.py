@@ -138,16 +138,18 @@ try:
             count = 0
                 
         width = longest * meters_per_pixel
-
         gapCenter = (int)((longestStart + longestEnd) / 2)
-        
         print(middle_depth_bw)
         print(width)
         print("Gap Center: ", gapCenter)
         print("Image width: ", TRIMMED_WIDTH)
+
         if width < 0.5:
             # stop drone
+            print("Stop")
             gapCenter = 0
+
+        
 
 
         if visualize:

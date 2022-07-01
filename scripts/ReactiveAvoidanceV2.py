@@ -141,9 +141,8 @@ try:
 
         gapCenter = (int)((longestStart + longestEnd) / 2)
         
-        print(middle_depth_filtered)
-        print(ceiling)
         print(middle_depth_bw)
+        print(width)
         print("Gap Center: ", gapCenter)
         print("Image width: ", TRIMMED_WIDTH)
         if width < 0.5:

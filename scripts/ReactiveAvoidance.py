@@ -1,90 +1,179 @@
+import logging
+from shutil import move
+import sys
+import time
+from threading import Event
+
 import pyrealsense2 as rs
 import cv2 as cv
-from controller import PIDController as PID
 import time
 import numpy as np
 
-# Configure depth and color streams
-pipeline = rs.pipeline()
-config = rs.config()
-
-# Get device product line for setting a supporting resolution
-pipeline_wrapper = rs.pipeline_wrapper(pipeline)
-pipeline_profile = config.resolve(pipeline_wrapper)
-device = pipeline_profile.get_device()
-device_product_line = str(device.get_info(rs.camera_info.product_line))
-
-# Establish depth stream
-config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 30)
-config.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, 30)
-
-# Start streaming
-pipeline.start(config)
+import cflib.crtp
+from cflib.crazyflie import Crazyflie
+from cflib.crazyflie.log import LogConfig
+from cflib.crazyflie.commander import Commander
+from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
+from cflib.positioning.motion_commander import MotionCommander
+from cflib.utils import uri_helper
 
 # DRONE PARAMETERS
+radio_uri = "radio://0/6/2M"
+usb_uri = "usb://0"
+deck_attached_event = Event()
+DEFAULT_HEIGHT = 0.5
 
 stopDist = 0.5  # Distance in meters away from an object that prevents the drone from moving forward
 lastTime = time.time()
 
-try:
-    while True:
+IMG_WIDTH, IMG_HEIGHT = (640, 480)
+FOV = 65
+SPEED = 0.2
 
-        # Wait for a depth frame
-        frames = pipeline.wait_for_frames()
-        depth_frame = frames.get_depth_frame()
-        color_frame = frames.get_color_frame()
-        if not depth_frame or not color_frame:
-            continue
+middle_running_average = np.empty((1, IMG_WIDTH))
+target_running_average = []
 
-        # Convert image to numpy arrays
-        depth_image = np.asanyarray(depth_frame.get_data())
-        color_image = np.asanyarray(color_frame.get_data())
-        [IMG_HEIGHT, IMG_WIDTH] = np.shape(depth_image)
+ceiling_m = 2  # depth ceiling in meters
+meters_per_pixel = 2 * ceiling_m / IMG_WIDTH * np.tan(0.5 * np.radians(FOV))
 
-        #Processing of depth image
-        trimmed_depth_image = depth_image[(int)(IMG_HEIGHT/20):(int)(IMG_HEIGHT*19/20), \
-                                    (int)(IMG_WIDTH/20):(int)(IMG_WIDTH*19/20)]   #Trim off edges of depth image
-        [TRIMMED_HEIGHT, TRIMMED_WIDTH] = np.shape(trimmed_depth_image)
-        trimmed_depth_image = cv.convertScaleAbs(trimmed_depth_image, alpha=0.03) #Convert to 8 bit values
-        blur = cv.blur(trimmed_depth_image, (15,15))
-        processed_depth_image = cv.bilateralFilter(blur, 9, 200, 200) #Noise Reduction
-        
 
-        # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-        depth_colormap = cv.applyColorMap(cv.convertScaleAbs(depth_image, alpha=0.03), cv.COLORMAP_JET)
-        processed_color_map = cv.applyColorMap(processed_depth_image, cv.COLORMAP_JET)
+# checks whether flowdeck is installed
+def param_deck_flow(_, value_str):
+    value = int(value_str)
+    print(value)
+    if value:
+        deck_attached_event.set()
+        print("Deck is attached!")
+    else:
+        print("Deck is NOT attached!")
 
-        # Find closest and furthest pixels: y is left-right, z is up-down (x is forward-back)
-        furthest_id = np.argmax(processed_depth_image)  # find index of furthest pixel
-        furthest_y, furthest_z = np.unravel_index(furthest_id, (TRIMMED_HEIGHT, TRIMMED_WIDTH))
-        furthest = depth_image[furthest_y, furthest_z]  # find depth of furthest pixel
+def linInterp(y1, y2, len, x):
+    return y1 + x * (y2 - y1) / len
 
-        closest_id = np.argmin(processed_depth_image)  # find index of closest pixel
-        closest_y, closest_z = np.unravel_index(closest_id, (TRIMMED_HEIGHT, TRIMMED_WIDTH))
-        closest = depth_image[closest_y, closest_z]  # find depth of closest pixel
+def establish_stream():
+    # Configure depth and color streams
+    pipeline = rs.pipeline()
+    config = rs.config()
 
-        # Add circles on closest and furthest points (BGR)
-        cv.circle(processed_color_map, (furthest_y, furthest_z), 10, (0, 0, 0), 3) #Black
-        cv.circle(processed_color_map, (closest_y, closest_z), 10, (255, 255, 255), 3) #White
+    config.enable_stream(rs.stream.depth, IMG_WIDTH, IMG_HEIGHT, rs.format.z16, 30)
 
-        # y_controller = PID(IMG_WIDTH / 2, 1, 1, 1, 0)
-        # z_controller = PID(IMG_HEIGHT / 2, 1, 1, 1, 0)
+    # Start streaming
+    pipeline.start(config)
 
-        # thisTime = time.time()
-        # y_controller.updateError(furthest_y, thisTime - lastTime)
-        # z_controller.updateError(furthest_z, thisTime - lastTime)
-        # lastTime = thisTime
+    return pipeline
 
-        depth_colormap_dim = depth_colormap.shape
+# Initialize all the CrazyFlie drivers:
+cflib.crtp.init_drivers(enable_debug_driver=False)
 
-        # Show images
-        cv.imshow("Original DepthMap", depth_colormap)
-        cv.imshow("Blurred DepthMap", processed_color_map)
-        cv.imshow("RGB", color_image)
+#Establish stream
+pipeline = establish_stream()
+print("Stream started")
 
-        cv.waitKey(1)
+with SyncCrazyflie(radio_uri, cf=Crazyflie(rw_cache="./cache")) as scf:
+    cf = scf.cf
+    
+    cf.param.add_update_callback(group="deck", name="bcFlow2", cb=param_deck_flow)
+    mc = MotionCommander(cf, default_height = DEFAULT_HEIGHT)
+    mc.take_off()
+    time.sleep(1)
 
-finally:
 
-    # Stop streaming
-    pipeline.stop()
+    t = time.time()
+    elapsed = time.time() - t
+    try:
+        while(elapsed < 10):
+
+            # Get Realsense Data
+            frames = pipeline.wait_for_frames()
+            depth_frame = frames.get_depth_frame()
+            if not depth_frame:
+                continue
+            # Convert image to numpy arrays
+            depth_image = np.asanyarray(depth_frame.get_data())
+
+             # Take middle slice of image
+            middle_depth = depth_image[(int)(IMG_HEIGHT / 2) - 10 : (int)(IMG_HEIGHT / 2) + 10, :]
+            middle_depth_averages = np.mean(middle_depth, axis=0)
+
+            # Take running average of middle slice
+            if np.size(middle_running_average[:, 0]) < 10:
+                middle_running_average = np.vstack((middle_running_average, middle_depth_averages))
+            else:
+                middle_running_average = middle_running_average[1:, :]
+                middle_running_average = np.vstack((middle_running_average, middle_depth_averages))
+            middle_depth_filtered = np.mean(middle_running_average, axis=0)
+
+            print(middle_depth_filtered)
+
+            # Find largest gap above depth ceiling
+            ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
+
+            # get black/white image
+            middle_depth_bw = np.empty_like(middle_depth_filtered)
+            for i in range(0, np.size(middle_depth_filtered)):
+                if middle_depth_filtered[i] > ceiling:
+                    middle_depth_bw[i] = 1
+                else:
+                    middle_depth_bw[i] = 0
+
+            # mean filter
+            averageLength = 9
+            for i in range(0, np.size(middle_depth_bw)):
+                if i > averageLength and np.size(middle_depth_bw) - i - 1 > averageLength:
+                    newVal = np.sum(middle_depth_bw[i - averageLength : i + averageLength + 1]) / (2 * averageLength + 1)
+
+                    newVal = round(newVal)
+
+                    middle_depth_bw[i] = newVal
+
+            count = 0
+            longest = -1
+            longestStart = -1
+            longestEnd = -1
+
+            # Find biggest gap
+            for i in range(0, np.size(middle_depth_bw)):
+                if middle_depth_bw[i] >= ceiling:
+                    count += 1
+                else:
+                    if count > longest:
+                        longest = count
+                        longestEnd = i - 1
+                        longestStart = longestEnd - count
+                        count = 0
+
+            # Corner case for when the gap reaches the side
+            if count > longest:
+                        longest = count
+                        longestEnd = i - 1
+                        longestStart = longestEnd - count
+                        count = 0
+
+            gapCenter = (int)((longestStart + longestEnd) / 2)
+            width = longest * meters_per_pixel
+
+            if width < 0.5:
+                # stop drone
+                mc.start_linear_motion(0, 0, 0, 0)
+                print("Stop: longest gap is ", width)
+                gapCenter = 0
+            else:
+
+                x = ceiling_m
+                y = meters_per_pixel * (IMG_WIDTH/2 - gapCenter)
+                vy = (y*SPEED)/(np.sqrt(x**2 + y**2))
+                vx = (x*SPEED)/(np.sqrt(x**2 + y**2))
+                print(gapCenter)
+                print("vx: ", vx, "    vy: ", vy)
+                mc.start_linear_motion(vx, vy, 0, 0)
+
+
+
+                elapsed = time.time() - t
+                time.sleep(0.1)
+
+    finally:
+        # Stop streaming
+        pipeline.stop()
+
+    mc.land()

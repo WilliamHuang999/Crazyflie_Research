@@ -1,0 +1,6 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/Users/jowallace/Dev/SPRE-2022/firmware'
+make: Leaving directory `/Users/jowallace/Dev/SPRE-2022/firmware'
+ 
+make: *** No targets specified and no makefile found.  Stop.
+

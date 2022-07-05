@@ -119,9 +119,7 @@ def adjust_position(cf, current_y):
 
         print("Setting position {}".format(position))
         for i in range(10):
-            cf.commander.send_position_setpoint(
-                position[0], position[1], position[2], position[3]
-            )
+            cf.commander.send_position_setpoint(position[0], position[1], position[2], position[3])
             time.sleep(0.1)
 
     cf.commander.send_stop_setpoint()
@@ -161,17 +159,17 @@ uri = "radio://0/1/2M"
 cflib.crtp.init_drivers(enable_debug_driver=False)
 
 # Scan for Crazyflies in range of the antenna:
-print("Scanning interfaces for Crazyflies...")
+print("Scanning interfaces for CrazyFlies...")
 available = cflib.crtp.scan_interfaces()
 
 # List local CrazyFlie devices:
-print("Crazyflies found:")
+print("CrazyFlies found:")
 for i in available:
     print(i[0])
 
 # Check that CrazyFlie devices are available:
 if len(available) == 0:
-    print("No Crazyflies found, cannot run example")
+    print("No CrazyFlies found, cannot run example")
 else:
     ## Ascent to hover; run the sequence; then descend from hover:
     # Use the CrazyFlie corresponding to team number:

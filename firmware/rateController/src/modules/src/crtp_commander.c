@@ -32,27 +32,26 @@
 #include "commander.h"
 #include "crtp.h"
 
+
 static bool isInit;
 
-static void commanderCrtpCB(CRTPPacket *pk);
+static void commanderCrtpCB(CRTPPacket* pk);
 
 void crtpCommanderInit(void)
 {
-    if (isInit)
-    {
-        return;
-    }
+  if(isInit) {
+    return;
+  }
 
-    crtpInit();
-    crtpRegisterPortCB(CRTP_PORT_SETPOINT, commanderCrtpCB);
-    crtpRegisterPortCB(CRTP_PORT_SETPOINT_GENERIC, commanderCrtpCB);
-    isInit = true;
+  crtpInit();
+  crtpRegisterPortCB(CRTP_PORT_SETPOINT, commanderCrtpCB);
+  crtpRegisterPortCB(CRTP_PORT_SETPOINT_GENERIC, commanderCrtpCB);
+  isInit = true;
 }
 
-enum crtpSetpointGenericChannel
-{
-    SET_SETPOINT_CHANNEL = 0,
-    META_COMMAND_CHANNEL = 1,
+enum crtpSetpointGenericChannel {
+  SET_SETPOINT_CHANNEL = 0,
+  META_COMMAND_CHANNEL = 1,
 };
 
 /* Channel 1 of the generic commander port is used for "meta-commands"
@@ -80,10 +79,9 @@ enum crtpSetpointGenericChannel
  */
 
 /* ---===== 1 - metaCommand_e enum =====--- */
-enum metaCommand_e
-{
-    metaNotifySetpointsStop = 0,
-    nMetaCommands,
+enum metaCommand_e {
+  metaNotifySetpointsStop = 0,
+  nMetaCommands,
 };
 
 typedef void (*metaCommandDecoder_t)(const void *data, size_t datalen);
@@ -93,53 +91,46 @@ typedef void (*metaCommandDecoder_t)(const void *data, size_t datalen);
 /* notifySetpointsStop meta-command. See commander.h function
  * commanderNotifySetpointsStop() for description and motivation.
  */
-struct notifySetpointsStopPacket
-{
-    uint32_t remainValidMillisecs;
+struct notifySetpointsStopPacket {
+  uint32_t remainValidMillisecs;
 } __attribute__((packed));
 void notifySetpointsStopDecoder(const void *data, size_t datalen)
 {
-    ASSERT(datalen == sizeof(struct notifySetpointsStopPacket));
-    // Note: The remainValidMillisecs argument is an artifact of the old
-    // pull-based high-level commander architecture, and is no longer needed.
-    commanderRelaxPriority();
+  ASSERT(datalen == sizeof(struct notifySetpointsStopPacket));
+  // Note: The remainValidMillisecs argument is an artifact of the old
+  // pull-based high-level commander architecture, and is no longer needed.
+  commanderRelaxPriority();
 }
 
-/* ---===== packetDecoders array =====--- */
+ /* ---===== packetDecoders array =====--- */
 const static metaCommandDecoder_t metaCommandDecoders[] = {
-    [metaNotifySetpointsStop] = notifySetpointsStopDecoder,
+  [metaNotifySetpointsStop] = notifySetpointsStopDecoder,
 };
 
 /* Decoder switch */
-static void commanderCrtpCB(CRTPPacket *pk)
+static void commanderCrtpCB(CRTPPacket* pk)
 {
-    static setpoint_t setpoint;
+  static setpoint_t setpoint;
 
-    if (pk->port == CRTP_PORT_SETPOINT && pk->channel == 0)
-    {
-        crtpCommanderRpytDecodeSetpoint(&setpoint, pk);
-        commanderSetSetpoint(&setpoint, COMMANDER_PRIORITY_CRTP);
-    }
-    else if (pk->port == CRTP_PORT_SETPOINT_GENERIC)
-    {
-        switch (pk->channel)
-        {
-        case SET_SETPOINT_CHANNEL:
-            crtpCommanderGenericDecodeSetpoint(&setpoint, pk);
-            commanderSetSetpoint(&setpoint, COMMANDER_PRIORITY_CRTP);
-            break;
-        case META_COMMAND_CHANNEL:
-        {
-            uint8_t metaCmd = pk->data[0];
-            if (metaCmd < nMetaCommands && (metaCommandDecoders[metaCmd] != NULL))
-            {
-                metaCommandDecoders[metaCmd](pk->data + 1, pk->size - 1);
-            }
+  if(pk->port == CRTP_PORT_SETPOINT && pk->channel == 0) {
+    crtpCommanderRpytDecodeSetpoint(&setpoint, pk);
+    commanderSetSetpoint(&setpoint, COMMANDER_PRIORITY_CRTP);
+  } else if (pk->port == CRTP_PORT_SETPOINT_GENERIC) {
+    switch (pk->channel) {
+    case SET_SETPOINT_CHANNEL:
+      crtpCommanderGenericDecodeSetpoint(&setpoint, pk);
+      commanderSetSetpoint(&setpoint, COMMANDER_PRIORITY_CRTP);
+      break;
+    case META_COMMAND_CHANNEL: {
+        uint8_t metaCmd = pk->data[0];
+        if (metaCmd < nMetaCommands && (metaCommandDecoders[metaCmd] != NULL)) {
+          metaCommandDecoders[metaCmd](pk->data + 1, pk->size - 1);
         }
-        break;
-        default:
-            /* Do nothing */
-            break;
-        }
+      }
+      break;
+    default:
+      /* Do nothing */
+      break;
     }
+  }
 }

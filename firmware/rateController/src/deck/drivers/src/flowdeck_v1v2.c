@@ -78,8 +78,7 @@ static bool useAdaptiveStd = false;
 // (will not work if useAdaptiveStd is on)
 static float flowStdFixed = 2.0f;
 
-// Originally IO3, but changed to 1 as patch to accomodate BigQuad
-#define NCS_PIN DECK_GPIO_IO1
+#define NCS_PIN DECK_GPIO_IO3
 
 
 static void flowdeckTask(void *param)
@@ -198,7 +197,7 @@ static const DeckDriver flowdeck1_deck = {
   .vid = 0xBC,
   .pid = 0x0A,
   .name = "bcFlow",
-  .usedGpio = DECK_USING_IO_1,
+  .usedGpio = DECK_USING_IO_3,
   .usedPeriph = DECK_USING_I2C | DECK_USING_SPI,
   .requiredEstimator = kalmanEstimator,
 
@@ -245,7 +244,7 @@ static const DeckDriver flowdeck2_deck = {
   .pid = 0x0F,
   .name = "bcFlow2",
 
-  .usedGpio = DECK_USING_IO_1,
+  .usedGpio = DECK_USING_IO_3,
   .usedPeriph = DECK_USING_I2C | DECK_USING_SPI,
   .requiredEstimator = kalmanEstimator,
 

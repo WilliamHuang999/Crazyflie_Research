@@ -98,9 +98,9 @@ struct ratePacket_s
 } __attribute__((packed));
 static void rateDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
 {
-    const struct zDistancePacket_s *values = data;
+    const struct ratePacket_s *values = data;
 
-    ASSERT(datalen == sizeof(struct zDistancePacket_s));
+    ASSERT(datalen == sizeof(struct ratePacket_s));
 
     setpoint->mode.z = modeAbs;
 

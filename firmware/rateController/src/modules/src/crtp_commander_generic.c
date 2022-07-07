@@ -85,12 +85,6 @@ enum packet_type
  */
 struct ratePacket_s
 {
-    float rollRate;  // deg/s
-    float pitchRate; // ...
-    float yawRate;   // ...
-} __attribute__((packed));
-struct ratePacket_s
-{
     float roll;      // deg
     float pitch;     // ...
     float yawrate;   // deg/s

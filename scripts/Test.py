@@ -78,7 +78,7 @@ def ascend(cf, alt, steps):
 def send_rates(cf, roll, pitch, yaw):
     pk = CRTPPacket()
     pk.port = CRTPPort.COMMANDER_GENERIC
-    pk.data = struct.pack("<Bfff", 8, roll, pitch, yaw)
+    pk.data = struct.pack("<Bffff", 8, roll, pitch, yaw, 0)
     cf.send_packet(pk)
 
 
@@ -136,7 +136,7 @@ else:
             time.sleep(0.05)
 
         while elapsed < 10:
-            send_rates(cf, 0, 0, 10000)
+            send_rates(cf, 0, 0, 100)
 
             print(myData.toString())
             elapsed = time.time() - t0

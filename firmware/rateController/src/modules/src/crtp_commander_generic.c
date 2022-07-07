@@ -99,7 +99,7 @@ static void rateDecoder(setpoint_t *setpoint, uint8_t type, const void *data, si
     setpoint->mode.z = modeAbs;
     setpoint->position.z = values->zDistance;
 
-    setpoint->mode.yaw = modeAbs;
+    setpoint->mode.yaw = modeVelocity;
     setpoint->mode.roll = modeVelocity;
     setpoint->mode.pitch = modeVelocity;
 

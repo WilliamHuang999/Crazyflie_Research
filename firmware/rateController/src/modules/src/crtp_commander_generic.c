@@ -88,16 +88,12 @@ struct ratePacket_s
     float roll;      // deg
     float pitch;     // ...
     float yaw;       // deg/s
-    float zDistance; // m in the world frame of reference
 } __attribute__((packed));
 static void rateDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
 {
     const struct ratePacket_s *values = data;
 
     ASSERT(datalen == sizeof(struct ratePacket_s));
-
-    setpoint->mode.z = modeAbs;
-    setpoint->position.z = values->zDistance;
 
     setpoint->mode.yaw = modeVelocity;
     setpoint->mode.roll = modeVelocity;

@@ -136,7 +136,7 @@ else:
             time.sleep(0.05)
 
         while elapsed < 10:
-            send_rates(cf, 0, 0, 100, 1)
+            send_rates(cf, 10000, 0, 0, 1)
 
             print(myData.toString())
             elapsed = time.time() - t0

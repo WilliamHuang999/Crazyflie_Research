@@ -101,11 +101,11 @@ static void rateDecoder(setpoint_t *setpoint, uint8_t type, const void *data, si
 
     setpoint->mode.yaw = modeAbs;
     setpoint->mode.roll = modeVelocity;
-    setpoint->mode.pitch = modeAbs;
+    setpoint->mode.pitch = modeVelocity;
 
     setpoint->attitude.yaw = values->yaw;
     setpoint->attitudeRate.roll = values->roll;
-    setpoint->attitude.pitch = values->pitch;
+    setpoint->attitudeRate.pitch = values->pitch;
 }
 
 /* stopDecoder

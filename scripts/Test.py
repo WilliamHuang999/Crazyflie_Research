@@ -75,10 +75,10 @@ def ascend(cf, alt, steps):
 
 # Set angular rate setpoints
 # Not working -- unclear whether the problem is this or the modified firmware
-def send_rates(cf, roll, pitch, yaw):
+def send_rates(cf, roll, pitch, yaw, altitude):
     pk = CRTPPacket()
     pk.port = CRTPPort.COMMANDER_GENERIC
-    pk.data = struct.pack("<Bffff", 8, roll, pitch, yaw, 0)
+    pk.data = struct.pack("<Bffff", 8, roll, pitch, yaw, altitude)
     cf.send_packet(pk)
 
 
@@ -136,7 +136,7 @@ else:
             time.sleep(0.05)
 
         while elapsed < 10:
-            send_rates(cf, 0, 0, 100)
+            send_rates(cf, 0, 0, 100, 1)
 
             print(myData.toString())
             elapsed = time.time() - t0

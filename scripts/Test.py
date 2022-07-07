@@ -78,7 +78,7 @@ def ascend(cf, alt, steps):
 def send_rates(cf, roll, pitch, yawrate, zdistance):
     pk = CRTPPacket()
     pk.port = CRTPPort.COMMANDER_GENERIC
-    pk.data = struct.pack("<Bffff", 2, roll, pitch, yawrate, zdistance)
+    pk.data = struct.pack("<Bffff", 8, roll, pitch, yawrate, zdistance)
     cf.send_packet(pk)
 
 

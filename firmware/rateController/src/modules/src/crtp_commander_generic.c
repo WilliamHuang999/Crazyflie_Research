@@ -88,7 +88,7 @@ struct ratePacket_s
     float roll;  // deg
     float pitch; // ...
     float yaw;   // deg/s
-    float blank  // filler because this might not work with just 3 floats
+    float blank;  // filler because this might not work with just 3 floats
 } __attribute__((packed));
 static void rateDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
 {

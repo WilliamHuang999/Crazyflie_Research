@@ -63,7 +63,6 @@ def ascend(cf, alt, steps):
 
 
 # Set angular rate setpoints
-# Not working -- unclear whether the problem is this or the modified firmware
 def send_rates(cf, roll, pitch, yaw, altitude):
     pk = CRTPPacket()
     pk.port = CRTPPort.COMMANDER_GENERIC

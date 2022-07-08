@@ -1,5 +1,3 @@
-#
-
 import logging
 from shutil import move
 import sys
@@ -8,9 +6,14 @@ from threading import Event
 import struct
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import numpy as np
+
+from utils.Data import Data
 
 # import pandas
 
+
+# Import CrazyFlie modules
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
@@ -25,19 +28,7 @@ from cflib.crtp.crtpstack import CRTPPort
 
 debug = False
 
-
-class data:
-    t = 0
-    roll = 0
-    pitch = 0
-    yaw = 0
-    thrust = 0
-
-    def toString(self):
-        return f"{myData.t}: {round(myData.roll, 2)}, {round(myData.pitch, 2)}, {round(myData.yaw, 2)}, {round(myData.thrust, 2)}"
-
-
-myData = data()
+myData = Data(10000)
 
 # uri = "usb://0"
 uri = "radio://0/80/2M/"
@@ -56,11 +47,9 @@ def simple_log_async(scf, logconf):
 
 # Logging callback function
 def log_stab_callback(timestamp, data, logconf):
-    myData.t = timestamp
-    myData.roll = data["stabilizer.roll"]
-    myData.pitch = data["stabilizer.pitch"]
-    myData.yaw = data["stabilizer.yaw"]
-    myData.thrust = data["stabilizer.thrust"]
+    myData.addSeries(
+        timestamp, data["stabilizer.roll"], data["stabilizer.pitch"], data["stabilizer.yaw"], data["stabilizer.thrust"]
+    )
 
     if debug:
         print("[%d][%s]: %s" % (timestamp, logconf.name, data))
@@ -127,7 +116,7 @@ else:
         t0 = time.time()
         elapsed = 0
 
-        # Main loop
+        # Hover for 5 seconds
         while elapsed < 5:
             cf.commander.send_hover_setpoint(0, 0, 0, 1)
 
@@ -135,8 +124,9 @@ else:
             elapsed = time.time() - t0
             time.sleep(0.05)
 
+        # Flip
         while elapsed < 10:
-            send_rates(cf, 0, 0, 100, 1)
+            send_rates(cf, 0, 0, 1000, 1)
 
             print(myData.toString())
             elapsed = time.time() - t0
@@ -145,3 +135,4 @@ else:
         cf.commander.send_hover_setpoint(0, 0, 0, 0)
 
         lg_stab.stop()
+        myData.save()

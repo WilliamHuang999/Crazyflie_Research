@@ -94,7 +94,7 @@ static void thrustDecoder(setpoint_t *setpoint, uint8_t type, const void *data, 
 
     ASSERT(datalen == sizeof(struct thrustPacket_s));
 
-    setpoint->thrust = data->thrust;
+    setpoint->thrust = values->thrust;
 }
 
 /* rateDecoder

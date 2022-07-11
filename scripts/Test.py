@@ -9,6 +9,8 @@ from matplotlib.animation import FuncAnimation
 import numpy as np
 
 from utils.Data import Data
+from utils.Command import send_thrust
+from utils.Command import send_rates
 
 # import pandas
 
@@ -82,14 +84,6 @@ def ascend(cf, alt, steps):
         time.sleep(0.1)
 
 
-# Set angular rate setpoints
-def send_rates(cf, roll, pitch, yaw, altitude):
-    pk = CRTPPacket()
-    pk.port = CRTPPort.COMMANDER_GENERIC
-    pk.data = struct.pack("<Bffff", 8, roll, pitch, yaw, altitude)
-    cf.send_packet(pk)
-
-
 # checks that a deck is installed
 def param_deck(id, value_str):
     id = id[7:-1]
@@ -135,12 +129,10 @@ else:
         t0 = time.time()
         elapsed = 0
 
-        cf.commander.send_setpoint(0, 0, 0, 0)
+        # send_thrust(cf, 0)
 
-        time.sleep(0.1)
-
-        while elapsed < 10:
-            cf.commander.send_setpoint(0, 0, 0, 100)
+        while elapsed < 0.5:
+            cf.commander.send_velocity_world_setpoint(0, 0, 100, 0)
 
             elapsed = time.time() - t0
 

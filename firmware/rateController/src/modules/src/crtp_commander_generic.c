@@ -86,7 +86,7 @@ enum packet_type
  */
 struct thrustPacket_s
 {
-    float thrust
+    float thrust;
 } __attribute__((packed));
 static void thrustDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
 {

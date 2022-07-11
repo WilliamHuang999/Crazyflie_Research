@@ -47,9 +47,29 @@ def simple_log_async(scf, logconf):
 
 # Logging callback function
 def log_stab_callback(timestamp, data, logconf):
-    myData.addSeries(
-        timestamp, data["stabilizer.roll"], data["stabilizer.pitch"], data["stabilizer.yaw"], data["stabilizer.thrust"]
-    )
+
+    roll = data["stabilizer.roll"]
+    pitch = data["stabilizer.pitch"]
+    yaw = data["stabilizer.yaw"]
+    thrust = data["stabilizer.thrust"]
+
+    # Unwrap data
+
+    # lastSeries = myData.getSeries()
+    # lastRoll = lastSeries[1]
+    # lastPitch = lastSeries[2]
+    # lastYaw = lastSeries[3]
+
+    # if abs(lastRoll - roll) >= 180:
+    #     roll += 360 * np.sign(lastRoll - roll)
+
+    # if abs(lastPitch - pitch) >= 180:
+    #     pitch += 360 * np.sign(lastPitch - pitch)
+
+    # if abs(lastYaw - yaw) >= 180:
+    #     yaw += 360 * np.sign(lastYaw - yaw)
+
+    myData.addSeries(timestamp, roll, pitch, yaw, thrust)
 
     if debug:
         print("[%d][%s]: %s" % (timestamp, logconf.name, data))
@@ -115,23 +135,35 @@ else:
         t0 = time.time()
         elapsed = 0
 
-        # Hover for 5 seconds
-        while elapsed < 5:
-            cf.commander.send_hover_setpoint(0, 0, 0, 1)
+        cf.commander.send_setpoint(0, 0, 0, 0)
 
-            print(myData.toString())
-            elapsed = time.time() - t0
-            time.sleep(0.05)
+        time.sleep(0.1)
 
-        # Flip
         while elapsed < 10:
-            send_rates(cf, 0, 0, 1000, 1)
+            cf.commander.send_setpoint(0, 0, 0, 100)
 
-            print(myData.toString())
             elapsed = time.time() - t0
-            time.sleep(0.05)
 
-        cf.commander.send_hover_setpoint(0, 0, 0, 0)
+        # # Hover for 5 seconds
+        # while elapsed < 5:
+        #     cf.commander.send_hover_setpoint(0, 0, 0, 1.5)
+
+        #     elapsed = time.time() - t0
+        #     time.sleep(0.05)
+
+        # # Flip
+        # startRoll = myData.getSeries()[1]
+        # while myData.getSeries()[1] - startRoll < 360:
+        #     send_rates(cf, 1000, 0, 0, 1.5)
+
+        #     elapsed = time.time() - t0
+        #     # time.sleep(0.05)
+
+        # send_rates(cf, -100, 0, 0, 1.5)
+        # cf.commander.send_hover_setpoint(0, 0, 0, 1.5)
+
+        # cf.commander.send_hover_setpoint(0, 0, 0, 0)
 
         lg_stab.stop()
-        myData.save()
+        myData.plot()
+        # myData.save("data")

@@ -73,12 +73,29 @@ enum packet_type
     fullStateType = 6,
     positionType = 7,
     rateType = 8,
+    thrustType = 9,
 };
 
 /* ---===== 2 - Decoding functions =====--- */
 /* The setpoint structure is reinitialized to 0 before being passed to the
  * functions
  */
+
+/* thrustDecoder
+ *
+ */
+struct thrustPacket_s
+{
+    float thrust
+} __attribute__((packed));
+static void thrustDecoder(setpoint_t *setpoint, uint8_t type, const void *data, size_t datalen)
+{
+    const struct thrustPacket_s *values = data;
+
+    ASSERT(datalen == sizeof(struct thrustPacket_s));
+
+    setpoint->thrust = data->thrust;
+}
 
 /* rateDecoder
  *
@@ -407,6 +424,7 @@ const static packetDecoder_t packetDecoders[] = {
     [fullStateType] = fullStateDecoder,
     [positionType] = positionDecoder,
     [rateType] = rateDecoder,
+    [thrustType] = thrustDecoder,
 };
 
 /* Decoder switch */

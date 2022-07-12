@@ -93,7 +93,7 @@ else:
         elapsed = 0
 
         # ascend to 0.5 m
-        while elapsed < 1:
+        while elapsed < 5:
             cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
 
             elapsed = time.time() - t0

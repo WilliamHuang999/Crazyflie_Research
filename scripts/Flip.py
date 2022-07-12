@@ -25,9 +25,6 @@ from cflib.positioning.motion_commander import MotionCommander
 from cflib.crazyflie.commander import Commander
 from cflib.utils import uri_helper
 
-from cflib.crtp.crtpstack import CRTPPacket
-from cflib.crtp.crtpstack import CRTPPort
-
 debug = False
 
 myData = Data(10000)
@@ -54,22 +51,6 @@ def log_stab_callback(timestamp, data, logconf):
     pitch = data["stabilizer.pitch"]
     yaw = data["stabilizer.yaw"]
     thrust = data["stabilizer.thrust"]
-
-    # Unwrap data
-
-    # lastSeries = myData.getSeries()
-    # lastRoll = lastSeries[1]
-    # lastPitch = lastSeries[2]
-    # lastYaw = lastSeries[3]
-
-    # if abs(lastRoll - roll) >= 180:
-    #     roll += 360 * np.sign(lastRoll - roll)
-
-    # if abs(lastPitch - pitch) >= 180:
-    #     pitch += 360 * np.sign(lastPitch - pitch)
-
-    # if abs(lastYaw - yaw) >= 180:
-    #     yaw += 360 * np.sign(lastYaw - yaw)
 
     myData.addSeries(timestamp, roll, pitch, yaw, thrust)
 

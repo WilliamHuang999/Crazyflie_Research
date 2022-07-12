@@ -99,7 +99,8 @@ else:
             elapsed = time.time() - t0
 
         # descend and land
-        cf.commander.send_hover_setpoint(0, 0, 0, 0)
+        cf.commander.send_hover_setpoint(0, 0, 0, 0.1)
+        cf.commander.send_stop_setpoint()
 
         lg_stab.stop()
         myData.plot()

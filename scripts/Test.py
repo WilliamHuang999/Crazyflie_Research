@@ -27,7 +27,7 @@ from cflib.utils import uri_helper
 
 debug = False
 
-myData = Data(10000)
+myData = Data(10000, 5, unwrap=[0, 1, 2])
 
 # uri = "usb://0"
 uri = "radio://0/80/2M/"
@@ -47,12 +47,16 @@ def simple_log_async(scf, logconf):
 # Logging callback function
 def log_stab_callback(timestamp, data, logconf):
 
+    # rollRate = data["pid_rate.roll_outP"]
+    # pitchRate = data["pid_rate.pitch_outP"]
+    # yawRate = data["pid_rate.yaw_outP"]
     roll = data["stabilizer.roll"]
     pitch = data["stabilizer.pitch"]
     yaw = data["stabilizer.yaw"]
     thrust = data["stabilizer.thrust"]
+    roll_P = data["pid_rate.roll_outP"]
 
-    myData.addSeries(timestamp, roll, pitch, yaw, thrust)
+    myData.addSeries(timestamp, [roll, pitch, yaw, thrust, roll_P])
 
     if debug:
         print("[%d][%s]: %s" % (timestamp, logconf.name, data))
@@ -84,6 +88,7 @@ lg_stab.add_variable("stabilizer.roll", "float")
 lg_stab.add_variable("stabilizer.pitch", "float")
 lg_stab.add_variable("stabilizer.yaw", "float")
 lg_stab.add_variable("stabilizer.thrust", "float")
+lg_stab.add_variable("pid_rate.roll_outP", "float")
 
 # Scan for Crazyflies in range of the antenna:
 print("Scanning interfaces for Crazyflies...")
@@ -112,17 +117,17 @@ else:
 
         # send_thrust(cf, 0)
 
-        while elapsed < 0.5:
-            cf.commander.send_velocity_world_setpoint(0, 0, 100, 0)
-
-            elapsed = time.time() - t0
-
-        # # Hover for 5 seconds
-        # while elapsed < 5:
-        #     cf.commander.send_hover_setpoint(0, 0, 0, 1.5)
+        # while elapsed < 0.5:
+        #     cf.commander.send_velocity_world_setpoint(0, 0, 100, 0)
 
         #     elapsed = time.time() - t0
-        #     time.sleep(0.05)
+
+        # Hover for 5 seconds
+        while elapsed < 5:
+            cf.commander.send_hover_setpoint(0, 0, 0, 1.5)
+
+            elapsed = time.time() - t0
+            time.sleep(0.05)
 
         # # Flip
         # startRoll = myData.getSeries()[1]
@@ -138,5 +143,5 @@ else:
         # cf.commander.send_hover_setpoint(0, 0, 0, 0)
 
         lg_stab.stop()
-        myData.plot()
+        myData.plot(plot=[0, 1, 2, 4], labels=["roll", "pitch", "yaw", "thrust", ""])
         # myData.save("data")

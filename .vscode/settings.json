@@ -1,6 +1,7 @@
 {
     "makefile.extensionOutputFolder": "./.vscode",
     "files.associations": {
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "pid.h": "c"
     }
 }

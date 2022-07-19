@@ -202,19 +202,6 @@ void attitudeControllerGetActuatorOutput(int16_t *roll, int16_t *pitch, int16_t 
  *  Log variables of attitude PID controller
  */
 LOG_GROUP_START(pid_attitude)
-// custom attitude setpoint logs
-/**
- * @brief Roll rate setpoint
- */
-LOG_ADD(LOG_FLOAT, roll_setpoint, &pidRoll.desired)
-/**
- * @brief Pitch rate setpoint
- */
-LOG_ADD(LOG_FLOAT, pitch_setpoint, &pidPitch.desired)
-/**
- * @brief Yaw rate setpoint
- */
-LOG_ADD(LOG_FLOAT, yaw_setpoint, &pidYaw.desired)
 /**
  * @brief Proportional output roll
  */

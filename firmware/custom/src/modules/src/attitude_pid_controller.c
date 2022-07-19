@@ -206,11 +206,11 @@ LOG_ADD(LOG_FLOAT, rollSetpoint, &pidRoll.desired)
 /**
  * @brief Pitch setpoint
  */
-LOG_ADD(LOG_FLOAT, pitchSetpoint, &pitchRoll.desired)
+LOG_ADD(LOG_FLOAT, pitchSetpoint, &pidPitch.desired)
 /**
  * @brief Yaw setpoint
  */
-LOG_ADD(LOG_FLOAT, yawSetpoint, &yawRoll.desired)
+LOG_ADD(LOG_FLOAT, yawSetpoint, &pidYaw.desired)
 /**
  * @brief Proportional output roll
  */

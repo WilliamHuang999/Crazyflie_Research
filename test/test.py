@@ -138,11 +138,11 @@ if __name__ == "__main__":
             # ascend_and_hover(cf)
 
             # hover_and_descend(cf)
-            while(elapsed < 10):
-                elapsed = time.time() - t
-                cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
-                time.sleep(0.1)
-            hover_and_descend(cf)
+            # while(elapsed < 10):
+            #     elapsed = time.time() - t
+            #     cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
+            #     time.sleep(0.1)
+            # hover_and_descend(cf)
 
             # box_sequence(scf, velo = 0.5)
             # take_off_simple(cf)

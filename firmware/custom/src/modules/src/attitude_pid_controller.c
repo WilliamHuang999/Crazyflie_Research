@@ -133,10 +133,6 @@ void attitudeControllerCorrectRatePID(
     float rollRateActual, float pitchRateActual, float yawRateActual,
     float rollRateDesired, float pitchRateDesired, float yawRateDesired)
 {
-    // set logging variables
-    rollRateSetpoint = rollRateDesired;
-    pitchRateSetpoint = pitchRateDesired;
-    yawRateSetpoint = yawRateDesired;
 
     pidSetDesired(&pidRollRate, rollRateDesired);
     rollOutput = saturateSignedInt16(pidUpdate(&pidRollRate, rollRateActual, true));

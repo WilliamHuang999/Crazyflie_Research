@@ -1,3 +1,6 @@
 [submodule "firmware/crazyflie-firmware"]
 	path = firmware/crazyflie-firmware
 	url = https://github.com/bitcraze/crazyflie-firmware
+[submodule "firmware/bigQuad-firmware"]
+	path = firmware/bigQuad-firmware
+	url = https://github.com/johnnwallace/bigQuad-firmware

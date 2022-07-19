@@ -37,6 +37,9 @@
 #define ATTITUDE_RATE_LPF_CUTOFF_FREQ 30.0f
 #define ATTITUDE_RATE_LPF_ENABLE false
 
+// variables for logging
+static float rollRateSetpoint, pitchRateSetpoint, yawRateSetpoint;
+
 static inline int16_t saturateSignedInt16(float in)
 {
     // don't use INT16_MIN, because later we may negate it, which won't work for that value.
@@ -200,18 +203,6 @@ void attitudeControllerGetActuatorOutput(int16_t *roll, int16_t *pitch, int16_t 
  */
 LOG_GROUP_START(pid_attitude)
 /**
- * @brief Roll setpoint
- */
-LOG_ADD(LOG_FLOAT, rollSetpoint, &pidRoll.desired)
-/**
- * @brief Pitch setpoint
- */
-LOG_ADD(LOG_FLOAT, pitchSetpoint, &pitchRoll.desired)
-/**
- * @brief Yaw setpoint
- */
-LOG_ADD(LOG_FLOAT, yawSetpoint, &yawRoll.desired)
-/**
  * @brief Proportional output roll
  */
 LOG_ADD(LOG_FLOAT, roll_outP, &pidRoll.outP)
@@ -253,6 +244,7 @@ LOG_GROUP_STOP(pid_attitude)
  *  Log variables of attitude rate PID controller
  */
 LOG_GROUP_START(pid_rate)
+// custom rate setpoint logs
 /**
  * @brief Roll rate setpoint
  */

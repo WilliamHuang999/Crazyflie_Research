@@ -743,11 +743,6 @@ LOG_GROUP_STOP(stateEstimate)
  */
 LOG_GROUP_START(stateEstimateZ)
 
-// Custom rate logging
-/**
- * @brief The roll rate of the Crazyflie []
- */
-
 /**
  * @brief The position of the Crazyflie in the global reference frame, X [mm]
  */

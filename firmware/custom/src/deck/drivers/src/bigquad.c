@@ -43,14 +43,14 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define BIGQUAD_BAT_VOLT_PIN DECK_GPIO_MISO
-#define BIGQUAD_BAT_VOLT_MULT 7.8f
-#define BIGQUAD_BAT_CURR_PIN DECK_GPIO_SCK
-#define BIGQUAD_BAT_AMP_PER_VOLT 1.0f
+#define BIGQUAD_BAT_VOLT_PIN       DECK_GPIO_MISO
+#define BIGQUAD_BAT_VOLT_MULT      7.8f
+#define BIGQUAD_BAT_CURR_PIN       DECK_GPIO_SCK
+#define BIGQUAD_BAT_AMP_PER_VOLT   1.0f
 
 #ifdef CONFIG_DECK_BIGQUAD_ENABLE
 
-// Hardware configuration
+//Hardware configuration
 static bool isInit;
 
 #ifdef CONFIG_DECK_BIGQUAD_ENABLE_OSD
@@ -58,68 +58,68 @@ static MspObject s_MspObject;
 
 static void osdTask(void *param)
 {
-    while (1)
-    {
-        char ch;
-        uart1Getchar(&ch);
+  while(1)
+  {
+    char ch;
+    uart1Getchar(&ch);
 
-        mspProcessByte(&s_MspObject, (uint8_t)ch);
-    }
+    mspProcessByte(&s_MspObject, (uint8_t)ch);
+  }
 }
 
-static void osdResponseCallback(uint8_t *pBuffer, uint32_t bufferLen)
+static void osdResponseCallback(uint8_t* pBuffer, uint32_t bufferLen)
 {
-    uart1SendData(bufferLen, pBuffer);
+  uart1SendData(bufferLen, pBuffer);
 }
 #endif // CONFIG_DECK_BIGQUAD_ENABLE_OSD
 
+
 static void bigquadInit(DeckInfo *info)
 {
-    if (isInit)
-    {
-        return;
-    }
+  if(isInit) {
+    return;
+  }
 
-    DEBUG_PRINT("Switching to brushless.\n");
-    motorsInit(motorMapBigQuadDeck);
-    extRxInit();
+  DEBUG_PRINT("Switching to brushless.\n");
+  motorsInit(motorMapBigQuadDeck);
+  extRxInit();
 #ifdef CONFIG_DECK_BIGQUAD_ENABLE_PM
-    pmEnableExtBatteryVoltMeasuring(BIGQUAD_BAT_VOLT_PIN, BIGQUAD_BAT_VOLT_MULT);
-    pmEnableExtBatteryCurrMeasuring(BIGQUAD_BAT_CURR_PIN, BIGQUAD_BAT_AMP_PER_VOLT);
+  pmEnableExtBatteryVoltMeasuring(BIGQUAD_BAT_VOLT_PIN, BIGQUAD_BAT_VOLT_MULT);
+  pmEnableExtBatteryCurrMeasuring(BIGQUAD_BAT_CURR_PIN, BIGQUAD_BAT_AMP_PER_VOLT);
 #endif
 
 #ifdef CONFIG_DECK_BIGQUAD_ENABLE_OSD
-    uart1Init(115200);
-    mspInit(&s_MspObject, osdResponseCallback);
-    xTaskCreate(osdTask, BQ_OSD_TASK_NAME,
-                configMINIMAL_STACK_SIZE, NULL, BQ_OSD_TASK_PRI, NULL);
+  uart1Init(115200);
+  mspInit(&s_MspObject, osdResponseCallback);
+  xTaskCreate(osdTask, BQ_OSD_TASK_NAME,
+              configMINIMAL_STACK_SIZE, NULL, BQ_OSD_TASK_PRI, NULL);
 #endif
 
-    isInit = true;
+  isInit = true;
 }
 
 static bool bigquadTest()
 {
-    bool status = true;
+  bool status = true;
 
-    if (!isInit)
-        return false;
+  if(!isInit)
+    return false;
 
-    status = motorsTest();
+  status = motorsTest();
 
-    return status;
+  return status;
 }
 
 static const DeckDriver bigquad_deck = {
-    .vid = 0xBC,
-    .pid = 0x05,
-    .name = "bcBigQuad",
+  .vid = 0xBC,
+  .pid = 0x05,
+  .name = "bcBigQuad",
 
-    .usedPeriph = DECK_USING_TIMER3 | DECK_USING_TIMER14,
-    .usedGpio = DECK_USING_PA2 | DECK_USING_PA3 | DECK_USING_IO_3 |
-                DECK_USING_IO_2 | DECK_USING_PA7,
-    .init = bigquadInit,
-    .test = bigquadTest,
+  .usedPeriph = DECK_USING_TIMER3 | DECK_USING_TIMER14,
+  .usedGpio = DECK_USING_PA2 | DECK_USING_PA3 | DECK_USING_IO_3 |
+              DECK_USING_IO_2 | DECK_USING_PA7,
+  .init = bigquadInit,
+  .test = bigquadTest,
 };
 
 DECK_DRIVER(bigquad_deck);

@@ -713,12 +713,6 @@ LOG_ADD_CORE(LOG_FLOAT, pitch, &state.attitude.pitch)
  */
 LOG_ADD_CORE(LOG_FLOAT, yaw, &state.attitude.yaw)
 
-// custom rate logging
-/**
- * @brief Estimated roll rate [milliradians / sec]
- */
-LOG_ADD_CORE(LOG_FLOAT, pitch, &stateCompressed.rateRoll)
-
 /**
  * @brief Attitude as a quaternion, x
  */

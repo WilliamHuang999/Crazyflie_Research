@@ -37,6 +37,9 @@
 #define ATTITUDE_RATE_LPF_CUTOFF_FREQ 30.0f
 #define ATTITUDE_RATE_LPF_ENABLE false
 
+// variables for logging
+static float rollRateSetpoint, pitchRateSetpoint, yawRateSetpoint;
+
 static inline int16_t saturateSignedInt16(float in)
 {
     // don't use INT16_MIN, because later we may negate it, which won't work for that value.

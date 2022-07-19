@@ -9,6 +9,8 @@ from matplotlib.animation import FuncAnimation
 import numpy as np
 
 from utils.Data import Data
+from utils.PropTest import propTest
+
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
@@ -20,7 +22,8 @@ from cflib.utils import uri_helper
 
 myData = Data(10000)
 
-uri = "usb://0"
+# uri = "usb://0"
+uri = "radio://0/80/2M"
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
@@ -37,6 +40,11 @@ def simple_log_async(scf, logconf):
     cf = scf.cf
     cf.log.add_config(logconf)
     logconf.data_received_cb.add_callback(log_callback)
+
+
+def simple_param_async(scf, groupstr, namestr):
+    cf = scf.cf
+    full_name = groupstr + "." + namestr
 
 
 # Logging callback function
@@ -92,15 +100,27 @@ else:
         t0 = time.time()
         elapsed = 0
 
-        # ascend to 0.5 m
-        while elapsed < 5:
-            cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
+        # # ascend to 0.5 m
+        # while elapsed < 0.5:
+        #     cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
 
-            elapsed = time.time() - t0
+        #     elapsed = time.time() - t0
 
-        # descend and land
-        cf.commander.send_hover_setpoint(0, 0, 0, 0.1)
-        cf.commander.send_stop_setpoint()
+        # # descend and land
+        # cf.commander.send_hover_setpoint(0, 0, 0, 0)
+
+        # input("Enter any character to start test:")
+
+        # cf.param.set_value("system.forceArm", 0)
+
+        propTest(cf)
+
+        while True:
+            arm = input("Arm?")
+            if arm == "y" or "Y":
+                break
+
+        cf.param.set_value("system.forceArm", 1)
 
         lg_stab.stop()
         myData.plot()

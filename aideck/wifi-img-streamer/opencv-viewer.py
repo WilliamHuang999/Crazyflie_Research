@@ -109,12 +109,10 @@ while(1):
 
       if format == 0:
           bayer_img = np.frombuffer(imgStream, dtype=np.uint8)   
-          bayer_img.shape = (244,324)
+          bayer_img.shape = (244, 324)
           color_img = cv2.cvtColor(bayer_img, cv2.COLOR_BayerBG2BGRA)
           cv2.imshow('Raw', bayer_img)
           cv2.imshow('Color', color_img)
-          print(np.shape(bayer_img))
-          print(np.shape(color_img))
           if args.save:
               cv2.imwrite(f"stream_out/raw/img_{count:06d}.jpeg", bayer_img)
               cv2.imwrite(f"stream_out/debayer/img_{count:06d}.jpeg", color_img)

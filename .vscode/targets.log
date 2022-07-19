@@ -7,7 +7,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 
 # This program built for i386-apple-darwin11.3.0
 
-# Make data base, printed on Tue Jul 12 10:35:49 2022
+# Make data base, printed on Tue Jul 19 11:25:36 2022
 
 # Variables
 
@@ -15,6 +15,8 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 <D = $(patsubst %/,%,$(dir $<))
 # automatic
 ?F = $(notdir $?)
+# environment
+PROVIDE_FULLSTACK_ACTION = true
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # environment
@@ -44,9 +46,15 @@ NO_PROXY = 127.0.0.1
 # environment
 LSCOLORS = Gxfxcxdxbxegedabagacad
 # environment
+GOLANG_EXECUTABLE = go
+# environment
+THREE_SCALE_USER_TOKEN = 207c527cfc2a6b8dcf4fa43ad7a976da
+# environment
 ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
+# environment
+UUID = 2bb15113-c991-47a2-96c4-15c844e715fa
 # environment
 SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.2TTNUjG4LE/Listeners
 # automatic
@@ -68,13 +76,15 @@ HOME = /Users/jowallace
 # default
 MAKEFILEPATH = $(shell /usr/bin/xcode-select -print-path 2>/dev/null || echo /Developer)/Makefiles
 # environment
-VSCODE_CODE_CACHE_PATH = /Users/jowallace/Library/Application Support/Code/CachedData/92d25e35d9bf1a6b16f7d0758f25d48ace11e5b9
+VSCODE_CODE_CACHE_PATH = /Users/jowallace/Library/Application Support/Code/CachedData/b06ae3b2d2dbfe28bca3134cc6be65935cdfea6a
 # environment
 LOGNAME = jowallace
 # environment
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 NVM_CD_FLAGS = -q
+# environment
+TELEMETRY_ID = e7edf72b-e8e8-40a6-9084-5694067bc765
 # environment
 ZSH = /Users/jowallace/.oh-my-zsh
 # environment
@@ -107,6 +117,8 @@ LESS = -R
 CONDA_SHLVL = 0
 # default
 MAKE_COMMAND := /Library/Developer/CommandLineTools/usr/bin/make
+# environment
+UTM_SOURCE = vscode
 # default
 .VARIABLES := 
 # environment
@@ -114,7 +126,7 @@ TMPDIR = /var/folders/7b/2bfgqf693vd92k06tdz6_2v80000gn/T/
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /Users/jowallace/Library/Application Support/Code/1.69.0-main.sock
+VSCODE_IPC_HOOK = /Users/jowallace/Library/Application Support/Code/1.69.1-main.sock
 # environment
 MallocNanoZone = 0
 # makefile
@@ -126,11 +138,13 @@ MFLAGS = -Rrqp
 # environment
 NVM_DIR = /Users/jowallace/.nvm
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.51318427.51318433
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.53891401.53891407
 # environment
 HOMEBREW_PREFIX = /usr/local
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
+# environment
+RECOMMENDER_API_URL = https://gw.api.openshift.io//api/v2
 # automatic
 +F = $(notdir $+)
 # environment
@@ -164,13 +178,16 @@ MAKELEVEL := 0
 # environment
 LANG = C
 # environment
-VSCODE_PID = 30342
+VSCODE_PID = 12387
 # environment
 _CE_CONDA = 
 # environment
 NVM_RC_VERSION = 
 # variable set hash-table stats:
-# Load=79/1024=8%, Rehash=0, Collisions=3/100=3%
+ 
+make: *** No rule to make target `all'.  Stop.
+
+# Load=86/1024=8%, Rehash=0, Collisions=4/107=4%
 
 # Pattern-specific Variable Values
 
@@ -252,8 +269,6 @@ GNUmakefile:
 # strcache size: total = 0 / max = 0 / min = 4096 / avg = 0
 # strcache free: total = 0 / max = 0 / min = 4096 / avg = 0
 
-# Finished Make data base on Tue Jul 12 10:35:49 2022
+# Finished Make data base on Tue Jul 19 11:25:36 2022
 
  
-make: *** No rule to make target `all'.  Stop.
-

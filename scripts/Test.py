@@ -27,7 +27,7 @@ from cflib.utils import uri_helper
 
 debug = False
 
-myData = Data(10000, 5, unwrap=[0, 1, 2])
+myData = Data(10000, 2, unwrap=[0])
 
 # uri = "usb://0"
 uri = "radio://0/80/2M/"
@@ -50,13 +50,10 @@ def log_stab_callback(timestamp, data, logconf):
     # rollRate = data["pid_rate.roll_outP"]
     # pitchRate = data["pid_rate.pitch_outP"]
     # yawRate = data["pid_rate.yaw_outP"]
-    roll = data["stabilizer.roll"]
-    pitch = data["stabilizer.pitch"]
-    yaw = data["stabilizer.yaw"]
-    thrust = data["stabilizer.thrust"]
-    roll_P = data["pid_rate.roll_outP"]
+    roll = data["stateEstimate.roll"]
+    rollRate = data["stateEstimateZ.rateRoll"]
 
-    myData.addSeries(timestamp, [roll, pitch, yaw, thrust, roll_P])
+    myData.addSeries(timestamp, [roll, rollRate])
 
     if debug:
         print("[%d][%s]: %s" % (timestamp, logconf.name, data))
@@ -84,11 +81,8 @@ cflib.crtp.init_drivers(enable_debug_driver=False)
 
 # Configure logging
 lg_stab = LogConfig(name="Stabilizer", period_in_ms=10)
-lg_stab.add_variable("stabilizer.roll", "float")
-lg_stab.add_variable("stabilizer.pitch", "float")
-lg_stab.add_variable("stabilizer.yaw", "float")
-lg_stab.add_variable("stabilizer.thrust", "float")
-lg_stab.add_variable("pid_rate.roll_outP", "float")
+lg_stab.add_variable("stateEstimate.roll", "float")
+lg_stab.add_variable("stateEstimateZ.rateRoll", "int16_t")
 
 # Scan for Crazyflies in range of the antenna:
 print("Scanning interfaces for Crazyflies...")
@@ -143,5 +137,5 @@ else:
         # cf.commander.send_hover_setpoint(0, 0, 0, 0)
 
         lg_stab.stop()
-        myData.plot(plot=[0, 1, 2, 4], labels=["roll", "pitch", "yaw", "thrust", ""])
+        myData.plot(plot=[0, 1], labels=["roll", "roll rate"])
         # myData.save("data")

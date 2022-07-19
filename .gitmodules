@@ -4,3 +4,6 @@
 [submodule "firmware/bigQuad-firmware"]
 	path = firmware/bigQuad-firmware
 	url = https://github.com/johnnwallace/bigQuad-firmware
+[submodule "firmware/bolt-firmware"]
+	path = firmware/bolt-firmware
+	url = https://github.com/johnnwallace/bolt-firmware

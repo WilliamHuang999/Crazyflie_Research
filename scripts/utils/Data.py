@@ -52,6 +52,9 @@ class Data:
         plt.legend()
         plt.show()
 
+    def getData(self):
+        return self.array[:, 0 : self.depth - 1]
+
     def save(self, path):
         np.savetxt(f"{path}/data.txt", self.array)
 

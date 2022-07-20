@@ -1,7 +1,16 @@
 {
+<<<<<<< Updated upstream
     "makefile.extensionOutputFolder": "./.vscode",
     "files.associations": {
         "stdint.h": "c",
         "pid.h": "c"
     }
 }
+=======
+  "makefile.extensionOutputFolder": "./.vscode",
+  "files.associations": {
+    "stdint.h": "c",
+    "arm_math.h": "c"
+  }
+}
+>>>>>>> Stashed changes

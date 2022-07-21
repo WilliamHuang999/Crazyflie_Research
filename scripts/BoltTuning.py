@@ -32,20 +32,20 @@ from cflib.utils import uri_helper
 DEG2RAD = np.pi / 180
 RAD2DEG = 180 / np.pi
 LOGT = 10  # logging period in ms
-URI = "radio://0/80/2M/"
+URI = "radio://0/1/2M/"
 
 # myData = Data(10000, 6, unwrap=[0, 1, 2, 3, 4, 5])
-myData = Data(10000, 8, unwrap=[4, 5])
+myData = Data(10000, 8, unwrap=[6, 7])
 
 # Add log config for asynchronous logging
 def simple_log_async(scf, logconf):
     cf = scf.cf
     cf.log.add_config(logconf)
-    logconf.data_received_cb.add_callback(log_rate_callback)
+    logconf.data_received_cb.add_callback(log_callback)
 
 
 # Logging callback function
-def log_rate_callback(timestamp, data, logconf):
+def log_callback(timestamp, data, logconf):
 
     rollRate = data["stateEstimateZ.rateRoll"]
     pitchRate = data["stateEstimateZ.ratePitch"]
@@ -122,7 +122,7 @@ def plotMotors(data):
 
 
 def plotRates(data):
-    fig, axs = plt.subplots(1, 3, sharex=True, sharey=True)
+    fig, axs = plt.subplots(1, 5, sharex=True, sharey=True)
 
     axs[0].plot(data[0, :], data[1, :] / 1000, "--", color="#96c4ff")
     axs[0].plot(data[0, :], data[4, :] * DEG2RAD, color="#1c7fff")
@@ -170,18 +170,22 @@ cflib.crtp.init_drivers(enable_debug_driver=False)
 
 # Configure logging
 lg_rate = LogConfig(name="Rates", period_in_ms=LOGT)
-# lg_rate.add_variable("stateEstimateZ.rateRoll", "int16_t")  # milliradians / sec
-# lg_rate.add_variable("stateEstimateZ.rateYaw", "int16_t")  # milliradians / sec
-# lg_rate.add_variable("stateEstimateZ.ratePitch", "int16_t")  # milliradians / sec
-# lg_rate.add_variable("controller.rollRate", "float")
-# lg_rate.add_variable("controller.pitchRate", "float")
-# lg_rate.add_variable("controller.yawRate", "float")
+lg_rate.add_variable("stateEstimateZ.rateRoll", "int16_t")  # milliradians / sec
+lg_rate.add_variable("stateEstimateZ.rateYaw", "int16_t")  # milliradians / sec
+lg_rate.add_variable("stateEstimateZ.ratePitch", "int16_t")  # milliradians / sec
+lg_rate.add_variable("controller.rollRate", "float")
+lg_rate.add_variable("controller.pitchRate", "float")
+lg_rate.add_variable("controller.yawRate", "float")
 lg_rate.add_variable("stabilizer.roll", "float")
 lg_rate.add_variable("stabilizer.pitch", "float")
-lg_rate.add_variable("motor.m1", "uint32_t")
-lg_rate.add_variable("motor.m2", "uint32_t")
-lg_rate.add_variable("motor.m3", "uint32_t")
-lg_rate.add_variable("motor.m4", "uint32_t")
+
+lg_motor = LogConfig(name="Motors", period_in_ms=LOGT)
+lg_motor.add_variable("motor.m1", "uint32_t")
+lg_motor.add_variable("motor.m2", "uint32_t")
+lg_motor.add_variable("motor.m3", "uint32_t")
+lg_motor.add_variable("motor.m4", "uint32_t")
+lg_motor.add_variable("stabilizer.roll", "float")
+lg_motor.add_variable("stabilizer.pitch", "float")
 
 
 # Scan for Crazyflies in range of the antenna:
@@ -211,8 +215,8 @@ else:
         elapsed = 0
 
         # ascend and hover
-        while elapsed < 10:
-            cf.commander.send_zdistance_setpoint(0, 0, 0, 0)
+        while elapsed < 5:
+            cf.commander.send_zdistance_setpoint(0, 0, 100, 0.5)
 
             elapsed = time.time() - t0
             time.sleep(0.05)
@@ -225,4 +229,4 @@ else:
 
         # plot data
         out = myData.getData()
-        plotMotors(out)
+        plotRates(out)

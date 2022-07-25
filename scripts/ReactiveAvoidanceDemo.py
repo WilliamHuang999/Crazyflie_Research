@@ -76,8 +76,6 @@ try:
         middle_depth = depth_image[(int)(IMG_HEIGHT / 2) - 10 : (int)(IMG_HEIGHT / 2) + 10, :]
         middle_depth_averages = np.mean(middle_depth, axis=0)
 
-        print("Middle depth average:")
-        print(middle_depth_averages)
 
         # Get running average of middle slice
         if np.size(middle_running_average[:, 0]) < 10:

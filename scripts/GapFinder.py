@@ -20,8 +20,6 @@ class GapFinder:
         # Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT / 2) - 10 : (int)(IMG_HEIGHT / 2) + 10, :]
         middle_depth_averages = np.mean(middle_depth, axis=0)
-        print("Middle depth average alternate:")
-        print(middle_depth_averages)
         self.running_average.addTerm(middle_depth_averages)
 
     def findGap(self):
@@ -101,6 +99,7 @@ class RunningAverage:
 
             if self.length > self.max_length:
                 self.first = self.first.next
+                self.length += -1
     
     def sum(self):
         current = self.first

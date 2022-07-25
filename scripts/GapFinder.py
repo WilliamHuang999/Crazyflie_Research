@@ -103,8 +103,6 @@ class RunningAverage:
         while current != None:
             sum = sum + current.data
             current = current.next
-        print("middle depth sum alternate")
-        print(sum)
         return sum
     
     def average(self):

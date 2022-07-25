@@ -30,11 +30,11 @@ from cflib.positioning.motion_commander import MotionCommander
 from cflib.crazyflie.commander import Commander
 from cflib.utils import uri_helper
 
-LOGGING = "pitch"
+LOGGING = "rates"
 DEG2RAD = np.pi / 180
 RAD2DEG = 180 / np.pi
 LOGT = 10  # logging period in ms
-URI = "radio://0/1/2M/"
+URI = "radio://0/80/2M/"
 
 if LOGGING == "pitch":
     myData = Data(10000, 4, unwrap=[2])
@@ -249,14 +249,14 @@ else:
         # initialize logging and arm props
         myLog.start()
         cf.param.set_value("system.forceArm", 1)
-        time.sleep(1)
+        time.sleep(5)
 
         t0 = time.time()
         elapsed = 0
 
         # ascend and hover
         while elapsed < 5:
-            cf.commander.send_zdistance_setpoint(0, 0, 100, 1)
+            cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
 
             elapsed = time.time() - t0
             time.sleep(0.05)

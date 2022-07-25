@@ -93,9 +93,9 @@ class RunningAverage:
             new = Node(term, None)
             self.last.next = new
             self.last = new
-            length += 1
+            self.length += 1
 
-            if length > self.max_length:
+            if self.length > self.max_length:
                 first = first.next
     
     def sum(self):

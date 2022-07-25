@@ -3,24 +3,21 @@ import numpy as np
 
 class GapFinder:
 
-    def __init__(self, invalid_band_size, ceiling_m = 2,  running_average_length = 10):
+    def __init__(self, ceiling_m = 2,  running_average_length = 10):
         self.ceiling_m = ceiling_m
-        self.invalid_band_size = invalid_band_size
         self.running_average = RunningAverage(size = running_average_length)
         self.depth_frame_units = -1
     
-    def addFrame(self, depth_frame):
-        self.depth_frame_units = depth_frame.get_units()
-        depth_image = np.asanyarray(depth_frame.get_data())
+    def addFrame(self, depth_image):
         (IMG_HEIGHT, IMG_WIDTH) = np.shape(depth_image)
-
-        # Cut off invalid depth band (and equal width on opposite side)
-        depth_image = depth_image[: , self.invalid_band_size : IMG_WIDTH  - self.invalid_band_size]
 
         # Take middle slice of image
         middle_depth = depth_image[(int)(IMG_HEIGHT / 2) - 10 : (int)(IMG_HEIGHT / 2) + 10, :]
         middle_depth_averages = np.mean(middle_depth, axis=0)
         self.running_average.addTerm(middle_depth_averages)
+    
+    def set_depth_frame_units(self, depth_frame_units):
+        self.depth_frame_units = depth_frame_units
 
     def findGap(self):
 

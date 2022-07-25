@@ -60,9 +60,7 @@ try:
         # Wait for a depth frame
         frames = pipeline.wait_for_frames()
         depth_frame = frames.get_depth_frame()
-        
-        gapFinder.addFrame(depth_frame)
-
+        gapFinder.set_depth_frame_units(depth_frame.get_units())
         if visualize: color_frame = frames.get_color_frame()
 
         # Convert image to numpy arrays
@@ -71,65 +69,8 @@ try:
 
         # Cut off invalid depth band (and equal width on opposite side)
         depth_image = depth_image[: , invalid_band_size : IMG_WIDTH  - invalid_band_size]
-
-        # Take middle slice of image
-        middle_depth = depth_image[(int)(IMG_HEIGHT / 2) - 10 : (int)(IMG_HEIGHT / 2) + 10, :]
-        middle_depth_averages = np.mean(middle_depth, axis=0)
-
-
-        # Get running average of middle slice
-        if np.size(middle_running_average[:, 0]) < 10:
-            middle_running_average = np.vstack((middle_running_average, middle_depth_averages))
-        else:
-            middle_running_average = middle_running_average[1:, :]
-            middle_running_average = np.vstack((middle_running_average, middle_depth_averages))
-        middle_depth_filtered = np.mean(middle_running_average, axis=0)
-        print("Middle Depth Sum: ")
-        print(np.sum(middle_running_average, axis=0))
-        print("Middle Depth Filtered")
-        print(middle_depth_filtered)
-
-        ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
-
-        # get black/white image
-        middle_depth_bw = np.empty_like(middle_depth_filtered)
-        for i in range(0, np.size(middle_depth_filtered)):
-            if middle_depth_filtered[i] > ceiling:
-                middle_depth_bw[i] = 1
-            else:
-                middle_depth_bw[i] = 0
-
-        # mean filter
-        averageLength = 9
-        for i in range(0, np.size(middle_depth_bw)):
-            if i > averageLength and np.size(middle_depth_bw) - i - 1 > averageLength:
-                newVal = np.sum(middle_depth_bw[i - averageLength : i + averageLength + 1]) / (2 * averageLength + 1)
-
-                newVal = round(newVal)
-
-                middle_depth_bw[i] = newVal
-
-        # Find largest gap above depth ceiling
-        count = 0
-        longest = -1
-        longestStart = -1
-        longestEnd = -1
-        for i in range(0, np.size(middle_depth_bw)):
-            if middle_depth_bw[i] > 0.5:
-                count += 1
-            elif count > longest:
-                longest = count
-                longestEnd = i
-                longestStart = longestEnd - count
-                count = 0
-        # Corner case for when the gap reaches the side
-        if count > longest:
-            longest = count
-            longestEnd = np.size(middle_depth_bw)
-            longestStart = longestEnd - count
-            count = 0
             
-        
+        gapFinder.addFrame(depth_image)
         gapCenter, longest = gapFinder.findGap()
         width = longest*meters_per_pixel
 

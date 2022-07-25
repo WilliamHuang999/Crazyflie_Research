@@ -42,10 +42,10 @@ class GapFinder:
 
         # mean filter
         averageLength = 9
-        test = middle_depth_filtered
-        for i in range(0, np.size(test)):
-            if i > averageLength and np.size(test) - i - 1 > averageLength:
-                newVal = np.sum(test[i - averageLength : i + averageLength + 1]) / (2 * averageLength + 1)
+        test = np.empty_like(middle_depth_filtered)
+        for i in range(0, np.size(middle_depth_filtered)):
+            if i > averageLength and np.size(middle_depth_filtered) - i - 1 > averageLength:
+                newVal = np.sum(middle_depth_filtered[i - averageLength : i + averageLength + 1]) / (2 * averageLength + 1)
                 test[i] = newVal
         print(test > ceiling)
 

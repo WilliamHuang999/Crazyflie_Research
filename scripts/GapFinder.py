@@ -24,7 +24,7 @@ class GapFinder:
 
     def findGap(self):
 
-        middle_depth_filtered = RunningAverage.average()
+        middle_depth_filtered = self.running_average.average()
 
         # Find largest gap above depth ceiling
         ceiling = self.ceiling_m / self.depth_frame_units  # in RealSense depth units

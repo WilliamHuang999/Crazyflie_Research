@@ -42,13 +42,6 @@ class GapFinder:
 
         # mean filter
         averageLength = 9
-        test = np.empty_like(middle_depth_filtered)
-        for i in range(0, np.size(middle_depth_filtered)):
-            if i > averageLength and np.size(middle_depth_filtered) - i - 1 > averageLength:
-                newVal = np.sum(middle_depth_filtered[i - averageLength : i + averageLength + 1]) / (2 * averageLength + 1)
-                test[i] = newVal
-        print(test > ceiling)
-
         for i in range(0, np.size(middle_depth_bw)):
             if i > averageLength and np.size(middle_depth_bw) - i - 1 > averageLength:
                 newVal = np.sum(middle_depth_bw[i - averageLength : i + averageLength + 1]) / (2 * averageLength + 1)
@@ -66,7 +59,7 @@ class GapFinder:
         longestStart = -1
         longestEnd = -1
         for i in range(0, np.size(middle_depth_bw)):
-            if middle_depth_bw[i] >= ceiling:
+            if middle_depth_bw[i] == 1:
                 count += 1
             else:
                 if count > longest:

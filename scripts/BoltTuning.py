@@ -32,7 +32,7 @@ from cflib.utils import uri_helper
 DEG2RAD = np.pi / 180
 RAD2DEG = 180 / np.pi
 LOGT = 10  # logging period in ms
-URI = "radio://0/1/2M/"
+URI = "radio://0/80/2M/"
 
 # myData = Data(10000, 6, unwrap=[0, 1, 2, 3, 4, 5])
 myData = Data(10000, 8, unwrap=[6, 7])
@@ -104,13 +104,13 @@ def plotMotors(data):
     axs[3].tick_params(labelbottom=True, labelleft=True, direction="in")
     axs[3].set_title("Motor 4")
 
-    axs[4].plot(data[0, :], data[5, :], color="#1c7fff")
+    axs[4].plot(data[0, :], data[5, :] * DEG2RAD, color="#1c7fff")
     axs[4].set_xlabel("timestamp")
     axs[4].set_ylabel("andle (deg)")
     axs[4].tick_params(labelbottom=True, labelleft=True, direction="in")
     axs[4].set_title("Roll")
 
-    axs[5].plot(data[0, :], data[6, :], color="#1c7fff")
+    axs[5].plot(data[0, :], data[6, :] * DEG2RAD, color="#1c7fff")
     axs[5].set_xlabel("timestamp")
     axs[5].set_ylabel("angle (deg)")
     axs[5].tick_params(labelbottom=True, labelleft=True, direction="in")
@@ -208,7 +208,7 @@ else:
 
         # initialize logging and arm props
         lg_rate.start()
-        cf.param.set_value("system.forceArm", 1)
+        cf.param.set_value("system.forceArm", 0)
         time.sleep(1)
 
         t0 = time.time()

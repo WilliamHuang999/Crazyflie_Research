@@ -61,7 +61,6 @@ try:
         frames = pipeline.wait_for_frames()
         depth_frame = frames.get_depth_frame()
         gapFinder.set_depth_frame_units(depth_frame.get_units())
-        print("Actual: ", depth_frame.get_units())
         if visualize: color_frame = frames.get_color_frame()
 
         # Convert image to numpy arrays

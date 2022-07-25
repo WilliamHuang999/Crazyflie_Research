@@ -73,7 +73,6 @@ try:
             
         gapFinder.addFrame(depth_image)
         gapCenter, longest = gapFinder.findGap()
-        print("Gap Center: ", gapCenter)
         width = longest*meters_per_pixel
 
         if width < 0.5:

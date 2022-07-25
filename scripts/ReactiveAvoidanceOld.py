@@ -128,15 +128,24 @@ try:
             longestEnd = np.size(middle_depth_bw)
             longestStart = longestEnd - count
             count = 0
-            
+                
+        width = longest * meters_per_pixel
+        gapCenter = (int)((longestStart + longestEnd) / 2)
         
-        gapCenter, longest = gapFinder.findGap()
-        width = longest*meters_per_pixel
+        gapCenter_alternate, longest_alternate = gapFinder.findGap()
+        width_alternate = longest_alternate*meters_per_pixel
+        print("Gap Center Alternate: ", gapCenter_alternate)
+        print("Width Alternate", width_alternate)
+        print("Gap Center: ", gapCenter)
+        print("Width: ", width)
+        print("Image width: ", TRIMMED_WIDTH)
 
         if width < 0.5:
             # stop drone
             print("Stop")
             gapCenter = 0
+
+        
 
 
         if visualize:
@@ -145,9 +154,21 @@ try:
             depth_colormap_dim = depth_colormap.shape
             cv.circle(depth_colormap, (gapCenter, (int)(IMG_HEIGHT / 2)), 10, (0, 0, 0), 3)  # Black
 
+            # Make colormap of middle_depth_averages
+            middle_depth_average_expanded = np.empty((IMG_HEIGHT, TRIMMED_WIDTH))
+            middle_depth_bw_expanded = np.empty_like(middle_depth_average_expanded)
+            for i in range(0, IMG_HEIGHT):
+                middle_depth_average_expanded[i] = middle_depth_filtered
+                middle_depth_bw_expanded[i] = middle_depth_bw
+            # middle_depths_colormap = cv.applyColorMap(
+            #    cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03), cv.COLORMAP_JET
+            # )
+
             # Show images
             cv.imshow("Original DepthMap", depth_colormap)
             cv.imshow("RGB", color_image)
+            #cv.imshow("Center Depths", cv.convertScaleAbs(middle_depth_average_expanded, alpha=0.03))
+            #cv.imshow("Black White", middle_depth_bw_expanded * 255)
 
         if cv.waitKey(1) == ord("q"):
             break

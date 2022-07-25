@@ -50,9 +50,6 @@ class GapFinder:
 
                 middle_depth_bw[i] = newVal
 
-        print("Middle BW alternate:")
-        print(middle_depth_bw)
-
         # Find biggest gap
         count = 0
         longest = -1
@@ -93,6 +90,7 @@ class RunningAverage:
         if self.first == None:
             self.first = Node(term, None)
             self.last = self.first
+            self.length += 1
         
         else:
             new = Node(term, None)

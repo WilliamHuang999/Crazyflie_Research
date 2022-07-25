@@ -50,7 +50,7 @@ lastTime = time.time()
 middle_running_average = np.empty((1, TRIMMED_WIDTH))
 target_running_average = []
 
-gapFinder = GapFinder(invalid_band_size)
+gapFinder = GapFinder()
 
 
 

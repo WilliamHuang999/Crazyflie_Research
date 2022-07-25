@@ -96,7 +96,7 @@ class RunningAverage:
             self.length += 1
 
             if self.length > self.max_length:
-                first = first.next
+                self.first = self.first.next
     
     def sum(self):
         current = self.first

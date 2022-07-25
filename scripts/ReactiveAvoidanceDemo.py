@@ -83,6 +83,8 @@ try:
             middle_running_average = middle_running_average[1:, :]
             middle_running_average = np.vstack((middle_running_average, middle_depth_averages))
         middle_depth_filtered = np.mean(middle_running_average, axis=0)
+        print("Middle Depth Filtered")
+        print(middle_depth_filtered)
 
         ceiling = ceiling_m / depth_frame.get_units()  # in RealSense depth units
 

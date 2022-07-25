@@ -69,10 +69,10 @@ class GapFinder:
 
         # Corner case for when the gap reaches the side
         if count > longest:
-                    longest = count
-                    longestEnd = i - 1
-                    longestStart = longestEnd - count
-                    count = 0
+            longest = count
+            longestEnd = i - 1
+            longestStart = longestEnd - count
+            count = 0
 
         gapCenter = (int)((longestStart + longestEnd) / 2)
 

@@ -45,7 +45,7 @@ class GapFinder:
         test = np.empty_like(middle_depth_filtered)
         for i in range(0, np.size(test)):
             if i > averageLength and np.size(test) - i - 1 > averageLength:
-                newVal = np.sum(middle_depth_bw[i - averageLength : i + averageLength + 1]) / (2 * averageLength + 1)
+                newVal = np.sum(test[i - averageLength : i + averageLength + 1]) / (2 * averageLength + 1)
                 test[i] = newVal
         print(test > ceiling)
 

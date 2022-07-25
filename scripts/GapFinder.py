@@ -27,6 +27,7 @@ class GapFinder:
         # Find largest gap above depth ceiling
         ceiling = self.ceiling_m / self.depth_frame_units  # in RealSense depth units
         print(ceiling)
+        print(self.depth_frame_units)
         # get black/white image
         middle_depth_bw = np.empty_like(middle_depth_filtered)
         for i in range(0, np.size(middle_depth_filtered)):

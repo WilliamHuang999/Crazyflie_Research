@@ -39,8 +39,7 @@ class GapFinder:
             else:
                 middle_depth_bw[i] = 0
 
-        print("Middle BW alternate:")
-        print(middle_depth_bw)
+
         # mean filter
         averageLength = 9
         for i in range(0, np.size(middle_depth_bw)):
@@ -51,6 +50,8 @@ class GapFinder:
 
                 middle_depth_bw[i] = newVal
 
+        print("Middle BW alternate:")
+        print(middle_depth_bw)
 
         # Find biggest gap
         count = 0

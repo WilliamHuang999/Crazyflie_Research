@@ -91,7 +91,6 @@ def log_callback(timestamp, data, logconf):
         yawSetpoint = data["controller.yaw"]
 
         attitudeData.addSeries(timestamp, [roll, pitch, yaw, rollSetpoint, pitchSetpoint, yawSetpoint])
-<<<<<<< HEAD
 
     elif logconf.name == "Velocity":
 
@@ -114,8 +113,6 @@ def log_callback(timestamp, data, logconf):
         zPosSetpoint = data["ctrltarget.z"]
 
         positionData.addSeries(timestamp, [xPos, yPos, zPos, xPosSetpoint, yPosSetpoint, zPosSetpoint])
-=======
->>>>>>> 324d9adc826089636f5eae28607de0a0b186b9e0
 
 
 def plot(motorArray, rateArray, attitudeArray, velocityArray, positionArray):
@@ -402,14 +399,8 @@ else:
         set_gains(cf, group="pid_rate", val="roll", kp=100, ki=100, kd=1.2)
         set_gains(cf, group="pid_rate", val="pitch", kp=100, ki=100, kd=1.2)
         print("Gains Changed")
-<<<<<<< HEAD
         print("Roll Rate:", get_gains(cf, "pid_rate", "roll"))
         print("Pitch Rate:", get_gains(cf, "pid_rate", "pitch"))
-=======
-        print("Roll Rate:" , get_gains(cf, "pid_rate", "roll") )
-        print("Pitch Rate:" , get_gains(cf, "pid_rate", "pitch") )
-        
->>>>>>> 324d9adc826089636f5eae28607de0a0b186b9e0
 
         # Continue Hovering
         elapsed = 0

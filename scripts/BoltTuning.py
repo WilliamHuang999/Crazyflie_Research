@@ -205,6 +205,20 @@ def configLog():
 
     return logMotors, logRates, logAttitude
 
+def set_gains(cf, group, val, kp, ki, kd):
+    prefix = group + "." + val
+    cf.param.set_value(prefix + "_kp", kp)
+    cf.param.set_value(prefix + "_ki", ki)
+    cf.param.set_value(prefix + "_kd", kd)
+
+def get_gains(cf, group, val):
+    prefix = group + "." + val
+    kp = cf.param.get_value(prefix + "_kp")
+    ki = cf.param.get_value(prefix + "_ki")
+    kd = cf.param.get_value(prefix + "_kd")
+
+    return kp, ki, kd
+
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
@@ -236,6 +250,13 @@ else:
         simple_log_async(scf, logRates)
         simple_log_async(scf, logAttitude)
 
+        # Initial Gains
+        set_gains(cf, group = "pid_rate", val = "roll", kp = 100, ki = 100, kd = 1.2)
+        set_gains(cf, group = "pid_rate", val = "pitch", kp = 100, ki = 100, kd = 1.2)
+        print("Roll Rate:" , get_gains(cf, "pid_rate", "roll") )
+        print("Pitch Rate:" , get_gains(cf, "pid_rate", "pitch") )
+
+
         # initialize logging and arm props
         logMotors.start()
         logRates.start()
@@ -248,7 +269,7 @@ else:
         elapsed = 0
 
         # ascend and hover
-        while elapsed < 5:
+        while elapsed < 3:
             cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
 
             elapsed = time.time() - t0
@@ -256,13 +277,11 @@ else:
 
         print("Changing gains")
         # Change gains after takeoff
-        cf.param.set_value("pid_rate.roll_kp", 100)
-        cf.param.set_value("pid_rate.roll_ki", 100)
-        cf.param.set_value("pid_rate.roll_kd", 1.2)
-        cf.param.set_value("pid_rate.pitch_kp", 100)
-        cf.param.set_value("pid_rate.pitch_ki", 100)
-        cf.param.set_value("pid_rate.pitch_kd", 1.2)
+        set_gains(cf, group = "pid_rate", val = "roll", kp = 100, ki = 100, kd = 1.2)
+        set_gains(cf, group = "pid_rate", val = "pitch", kp = 100, ki = 100, kd = 1.2)
         print("Gains Changed")
+        print("Roll Rate:" , get_gains(cf, "pid_rate", "roll") )
+        print("Pitch Rate:" , get_gains(cf, "pid_rate", "pitch") )
 
         # Continue Hovering
         elapsed = 0
@@ -274,7 +293,15 @@ else:
             time.sleep(0.05)
 
         # land, disarm props, and stop logging data
-        cf.commander.send_hover_setpoint(0, 0, 0, 0.1)
+        # Descend:
+        for y in range(10):
+            cf.commander.send_hover_setpoint(0, 0, 0, (10 - y) / 25)
+            time.sleep(0.1)
+        # Stop all motion:
+        for i in range(10):
+            cf.commander.send_stop_setpoint()
+            time.sleep(0.1)
+
         cf.param.set_value("system.forceArm", 0)
         logMotors.stop()
         logRates.stop()

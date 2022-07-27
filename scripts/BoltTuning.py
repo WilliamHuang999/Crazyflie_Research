@@ -31,7 +31,7 @@ from cflib.utils import uri_helper
 DEG2RAD = np.pi / 180
 RAD2DEG = 180 / np.pi
 LOGT = 10  # logging period in ms
-URI = "radio://0/1/2M/"
+URI = "radio://0/80/2M/"
 
 # Create objects for storing data
 motorData = Data(10000, 4)
@@ -75,7 +75,7 @@ def log_callback(timestamp, data, logconf):
         pitchRateSetpoint = data["controller.pitchRate"] * DEG2RAD
         yawRateSetpoint = data["controller.yawRate"] * DEG2RAD
 
-        motorData.addSeries(
+        rateData.addSeries(
             timestamp, [rollRate, pitchRate, yawRate, rollRateSetpoint, pitchRateSetpoint, yawRateSetpoint]
         )
 
@@ -88,7 +88,7 @@ def log_callback(timestamp, data, logconf):
         pitchSetpoint = data["controller.pitch"]
         yawSetpoint = data["controller.yaw"]
 
-        motorData.addSeries(timestamp, [roll, pitch, yaw, rollSetpoint, pitchSetpoint, yawSetpoint])
+        attitudeData.addSeries(timestamp, [roll, pitch, yaw, rollSetpoint, pitchSetpoint, yawSetpoint])
 
 
 def plot(motorArray, rateArray, attitudeArray):
@@ -206,16 +206,37 @@ def configLog():
     return logMotors, logRates, logAttitude
 
 def set_gains(cf, group, val, kp, ki, kd):
-    prefix = group + "." + val
-    cf.param.set_value(prefix + "_kp", kp)
-    cf.param.set_value(prefix + "_ki", ki)
-    cf.param.set_value(prefix + "_kd", kd)
+    
+    if group == "pid_rate" or group == "pid_attitude":
+        prefix = group + "." + val
+        cf.param.set_value(prefix + "_kp", kp)
+        cf.param.set_value(prefix + "_ki", ki)
+        cf.param.set_value(prefix + "_kd", kd)
+    
+    elif group == "velCtlPid" or group == "posCtlPid":
+        prefix = group + "." + val
+        cf.param.set_value(prefix + "Kp", kp)
+        cf.param.set_value(prefix + "Ki", ki)
+        cf.param.set_value(prefix + "Kd", kd)
+
 
 def get_gains(cf, group, val):
-    prefix = group + "." + val
-    kp = cf.param.get_value(prefix + "_kp")
-    ki = cf.param.get_value(prefix + "_ki")
-    kd = cf.param.get_value(prefix + "_kd")
+
+    if group == "pid_rate" or group == "pid_attitude":
+        prefix = group + "." + val
+        kp = cf.param.get_value(prefix + "_kp")
+        ki = cf.param.get_value(prefix + "_ki")
+        kd = cf.param.get_value(prefix + "_kd")
+    
+    elif group == "velCtlPid" or group == "posCtlPid":
+        prefix = group + "." + val
+        kp = cf.param.get_value(prefix + "Kp")
+        ki = cf.param.get_value(prefix + "Ki")
+        kd = cf.param.get_value(prefix + "Kd")
+    
+    else:
+        print("Not a PID group")
+        return -1, -1, -1
 
     return kp, ki, kd
 
@@ -253,8 +274,12 @@ else:
         # Initial Gains
         set_gains(cf, group = "pid_rate", val = "roll", kp = 100, ki = 100, kd = 1.2)
         set_gains(cf, group = "pid_rate", val = "pitch", kp = 100, ki = 100, kd = 1.2)
+        set_gains(cf, group = "velCtlPid", val = "vx", kp = 25, ki = 1, kd = 0)
+        set_gains(cf, group = "velCtlPid", val = "vy", kp = 25, ki = 1, kd = 0)
         print("Roll Rate:" , get_gains(cf, "pid_rate", "roll") )
         print("Pitch Rate:" , get_gains(cf, "pid_rate", "pitch") )
+        print("Vx gains: ", get_gains(cf, "velCtlPid", "vx"))
+        print("Vy gains: ", get_gains(cf, "velCtlPid", "vy"))
 
 
         # initialize logging and arm props
@@ -282,6 +307,7 @@ else:
         print("Gains Changed")
         print("Roll Rate:" , get_gains(cf, "pid_rate", "roll") )
         print("Pitch Rate:" , get_gains(cf, "pid_rate", "pitch") )
+        
 
         # Continue Hovering
         elapsed = 0

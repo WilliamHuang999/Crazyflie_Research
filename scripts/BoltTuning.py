@@ -217,6 +217,20 @@ def configLog():
 
     return logOut
 
+def set_gains(cf, group, val, kp, ki, kd):
+    prefix = group + "." + val
+    cf.param.set_value(prefix + "_kp", kp)
+    cf.param.set_value(prefix + "_ki", ki)
+    cf.param.set_value(prefix + "_kd", kd)
+
+def get_gains(cf, group, val):
+    prefix = group + "." + val
+    kp = cf.param.get_value(prefix + "_kp")
+    ki = cf.param.get_value(prefix + "_ki")
+    kd = cf.param.get_value(prefix + "_kd")
+
+    return kp, ki, kd
+
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
@@ -246,6 +260,23 @@ else:
         cf.param.add_update_callback(group="deck", name="bcFlow2", cb=param_deck)
         simple_log_async(scf, myLog)
 
+        # Initial Gains
+        set_gains(cf, group = "pid_rate", val = "roll", kp = 100, ki = 100, kd = 1.2)
+        print("Initial Gains: ")
+        cf.param.set_value("pid_rate.roll_kp", 100)
+        print("Roll rate kp: ", cf.param.get_value("pid_rate.roll_kp"))
+        cf.param.set_value("pid_rate.roll_ki", 100)
+        print("Roll rate ki: ", cf.param.get_value("pid_rate.roll_ki"))
+        cf.param.set_value("pid_rate.roll_kd", 1.2)
+        print("Roll rate kd: ", cf.param.get_value("pid_rate.roll_kd"))
+
+        cf.param.set_value("pid_rate.pitch_kp", 100)
+        print("Pitch rate kp: ", cf.param.get_value("pid_rate.pitch_kp"))
+        cf.param.set_value("pid_rate.pitch_ki", 100)
+        print("Pitch rate ki: ", cf.param.get_value("pid_rate.pitch_ki"))
+        cf.param.set_value("pid_rate.pitch_kd", 1.2)
+        print("Pitch rate kd: ", cf.param.get_value("pid_rate.pitch_kd"))
+
         # initialize logging and arm props
         myLog.start()
         cf.param.set_value("system.forceArm", 1)
@@ -255,7 +286,7 @@ else:
         elapsed = 0
 
         # ascend and hover
-        while elapsed < 5:
+        while elapsed < 3:
             cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
 
             elapsed = time.time() - t0
@@ -264,12 +295,19 @@ else:
 
         print("Changing gains")
         # Change gains after takeoff
-        cf.param.set_value("pid_rate.roll_kp", 100)
+        cf.param.set_value("pid_rate.roll_kp", 50)
+        print("Roll rate kp: ", cf.param.get_value("pid_rate.roll_kp"))
         cf.param.set_value("pid_rate.roll_ki", 100)
+        print("Roll rate ki: ", cf.param.get_value("pid_rate.roll_ki"))
         cf.param.set_value("pid_rate.roll_kd", 1.2)
-        cf.param.set_value("pid_rate.pitch_kp", 100)
+        print("Roll rate kd: ", cf.param.get_value("pid_rate.roll_kd"))
+
+        cf.param.set_value("pid_rate.pitch_kp", 50)
+        print("Pitch rate kp: ", cf.param.get_value("pid_rate.pitch_kp"))
         cf.param.set_value("pid_rate.pitch_ki", 100)
+        print("Pitch rate ki: ", cf.param.get_value("pid_rate.pitch_ki"))
         cf.param.set_value("pid_rate.pitch_kd", 1.2)
+        print("Pitch rate kd: ", cf.param.get_value("pid_rate.pitch_kd"))
         print("Gains Changed")
 
         # Continue Hovering
@@ -282,7 +320,15 @@ else:
             time.sleep(0.05)
 
         # land, disarm props, and stop logging data
-        cf.commander.send_hover_setpoint(0, 0, 0, 0.1)
+        # Descend:
+        for y in range(10):
+            cf.commander.send_hover_setpoint(0, 0, 0, (10 - y) / 25)
+            time.sleep(0.1)
+        # Stop all motion:
+        for i in range(10):
+            cf.commander.send_stop_setpoint()
+            time.sleep(0.1)
+
         cf.param.set_value("system.forceArm", 0)
         myLog.stop()
 

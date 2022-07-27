@@ -262,20 +262,10 @@ else:
 
         # Initial Gains
         set_gains(cf, group = "pid_rate", val = "roll", kp = 100, ki = 100, kd = 1.2)
-        print("Initial Gains: ")
-        cf.param.set_value("pid_rate.roll_kp", 100)
-        print("Roll rate kp: ", cf.param.get_value("pid_rate.roll_kp"))
-        cf.param.set_value("pid_rate.roll_ki", 100)
-        print("Roll rate ki: ", cf.param.get_value("pid_rate.roll_ki"))
-        cf.param.set_value("pid_rate.roll_kd", 1.2)
-        print("Roll rate kd: ", cf.param.get_value("pid_rate.roll_kd"))
+        set_gains(cf, group = "pid_rate", val = "pitch", kp = 100, ki = 100, kd = 1.2)
+        print("Roll Rate:" , get_gains(cf, "pid_rate", "roll") )
+        print("Pitch Rate:" , get_gains(cf, "pid_rate", "pitch") )
 
-        cf.param.set_value("pid_rate.pitch_kp", 100)
-        print("Pitch rate kp: ", cf.param.get_value("pid_rate.pitch_kp"))
-        cf.param.set_value("pid_rate.pitch_ki", 100)
-        print("Pitch rate ki: ", cf.param.get_value("pid_rate.pitch_ki"))
-        cf.param.set_value("pid_rate.pitch_kd", 1.2)
-        print("Pitch rate kd: ", cf.param.get_value("pid_rate.pitch_kd"))
 
         # initialize logging and arm props
         myLog.start()
@@ -295,20 +285,11 @@ else:
 
         print("Changing gains")
         # Change gains after takeoff
-        cf.param.set_value("pid_rate.roll_kp", 50)
-        print("Roll rate kp: ", cf.param.get_value("pid_rate.roll_kp"))
-        cf.param.set_value("pid_rate.roll_ki", 100)
-        print("Roll rate ki: ", cf.param.get_value("pid_rate.roll_ki"))
-        cf.param.set_value("pid_rate.roll_kd", 1.2)
-        print("Roll rate kd: ", cf.param.get_value("pid_rate.roll_kd"))
-
-        cf.param.set_value("pid_rate.pitch_kp", 50)
-        print("Pitch rate kp: ", cf.param.get_value("pid_rate.pitch_kp"))
-        cf.param.set_value("pid_rate.pitch_ki", 100)
-        print("Pitch rate ki: ", cf.param.get_value("pid_rate.pitch_ki"))
-        cf.param.set_value("pid_rate.pitch_kd", 1.2)
-        print("Pitch rate kd: ", cf.param.get_value("pid_rate.pitch_kd"))
+        set_gains(cf, group = "pid_rate", val = "roll", kp = 100, ki = 100, kd = 1.2)
+        set_gains(cf, group = "pid_rate", val = "pitch", kp = 100, ki = 100, kd = 1.2)
         print("Gains Changed")
+        print("Roll Rate:" , get_gains(cf, "pid_rate", "roll") )
+        print("Pitch Rate:" , get_gains(cf, "pid_rate", "pitch") )
 
         # Continue Hovering
         elapsed = 0

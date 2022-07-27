@@ -6,9 +6,6 @@ import time
 import numpy as np
 
 
-def linInterp(y1, y2, len, x):
-    return y1 + x * (y2 - y1) / len
-
 
 # Configure depth and color streams
 pipeline = rs.pipeline()

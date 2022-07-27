@@ -261,9 +261,28 @@ else:
             elapsed = time.time() - t0
             time.sleep(0.05)
 
+
+        print("Changing gains")
+        # Change gains after takeoff
+        cf.param.set_value("pid_rate.roll_kp", 100)
+        cf.param.set_value("pid_rate.roll_ki", 100)
+        cf.param.set_value("pid_rate.roll_kd", 1.2)
+        cf.param.set_value("pid_rate.pitch_kp", 100)
+        cf.param.set_value("pid_rate.pitch_ki", 100)
+        cf.param.set_value("pid_rate.pitch_kd", 1.2)
+        print("Gains Changed")
+
+        # Continue Hovering
+        elapsed = 0
+        t1 = time.time()
+        while elapsed < 5:
+            cf.commander.send_hover_setpoint(0, 0, 0, 0.5)
+
+            elapsed = time.time() - t1
+            time.sleep(0.05)
+
         # land, disarm props, and stop logging data
         cf.commander.send_hover_setpoint(0, 0, 0, 0.1)
-        time.sleep(0.5)
         cf.param.set_value("system.forceArm", 0)
         myLog.stop()
 

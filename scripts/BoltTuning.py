@@ -2,6 +2,7 @@
 # and angular rate setpoints. This should be run remotely over a radio connection with the
 # Bolt instead of through the Pi on the drone.
 
+import pickle
 import logging
 from os import times
 from shutil import move
@@ -17,9 +18,6 @@ from utils.Data import Data
 from utils.Command import send_thrust
 from utils.Command import send_rates
 
-# import pandas
-
-
 # Import CrazyFlie modules
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
@@ -30,18 +28,15 @@ from cflib.positioning.motion_commander import MotionCommander
 from cflib.crazyflie.commander import Commander
 from cflib.utils import uri_helper
 
-LOGGING = "rates"
 DEG2RAD = np.pi / 180
 RAD2DEG = 180 / np.pi
 LOGT = 10  # logging period in ms
-URI = "radio://0/80/2M/"
+URI = "radio://0/1/2M/"
 
-if LOGGING == "pitch":
-    myData = Data(10000, 4, unwrap=[2])
-elif LOGGING == "motors":
-    myData = Data(10000, 6, unwrap=[4, 5])
-elif LOGGING == "rates":
-    myData = Data(10000, 6, unwrap=[4, 5])
+# Create objects for storing data
+motorData = Data(10000, 4)
+rateData = Data(10000, 6)
+attitudeData = Data(10000, 6, unwrap=[0, 1, 2, 3, 4, 5])
 
 # checks that a deck is installed
 def param_deck(id, value_str):
@@ -62,160 +57,153 @@ def simple_log_async(scf, logconf):
 
 # Logging callback function
 def log_callback(timestamp, data, logconf):
-    if LOGGING == "pitch":
-        pitchRate = data["stateEstimateZ.ratePitch"]
-        pitchRateSetpoint = data["controller.pitchRate"]
-        pitch = data["stabilizer.pitch"]
-        pitchSetpoint = data["controller.pitch"]
+    if logconf.name == "Motors":
 
-        myData.addSeries(timestamp, [pitchRate, pitchRateSetpoint, pitch, pitchSetpoint])
-
-    elif LOGGING == "rates":
-        rollRate = data["stateEstimateZ.rateRoll"]
-        pitchRate = data["stateEstimateZ.ratePitch"]
-        rollRateSetpoint = data["controller.rollRate"]
-        pitchRateSetpoint = data["controller.pitchRate"]
-        roll = data["stabilizer.roll"]
-        pitch = data["stabilizer.pitch"]
-
-        myData.addSeries(timestamp, [rollRate, pitchRate, rollRateSetpoint, pitchRateSetpoint, roll, pitch])
-
-    elif LOGGING == "motors":
         m1 = data["motor.m1"]
         m2 = data["motor.m2"]
         m3 = data["motor.m3"]
         m4 = data["motor.m4"]
+
+        motorData.addSeries(timestamp, [m1, m2, m3, m4])
+
+    elif logconf.name == "Rates":
+
+        rollRate = data["stateEstimateZ.rateRoll"] / 1000
+        pitchRate = data["stateEstimateZ.ratePitch"] / 1000
+        yawRate = data["stateEstimateZ.rateYaw"] / 1000
+        rollRateSetpoint = data["controller.rollRate"] * DEG2RAD
+        pitchRateSetpoint = data["controller.pitchRate"] * DEG2RAD
+        yawRateSetpoint = data["controller.yawRate"] * DEG2RAD
+
+        motorData.addSeries(
+            timestamp, [rollRate, pitchRate, yawRate, rollRateSetpoint, pitchRateSetpoint, yawRateSetpoint]
+        )
+
+    elif logconf.name == "Attitude":
+
         roll = data["stabilizer.roll"]
         pitch = data["stabilizer.pitch"]
+        yaw = data["stabilizer.yaw"]
+        rollSetpoint = data["controller.roll"]
+        pitchSetpoint = data["controller.pitch"]
+        yawSetpoint = data["controller.yaw"]
 
-        myData.addSeries(timestamp, [m1, m2, m3, m4, roll, pitch])
+        motorData.addSeries(timestamp, [roll, pitch, yaw, rollSetpoint, pitchSetpoint, yawSetpoint])
 
 
-def plot(data):
-    if LOGGING == "motors":
-        fig, axs = plt.subplots(1, 6, sharex=True)
+def plot(motorArray, rateArray, attitudeArray):
+    motorFig, motorAxs = plt.subplots(1, 4, sharex=True, sharey=True)
+    rateFig, rateAxs = plt.subplots(1, 3, sharex=True, sharey=True)
+    attitudeFig, attitudeAxs = plt.subplots(1, 3, sharex=True, sharey=True)
 
-        axs[0].plot(data[0, :], data[1, :], color="#1c7fff")
-        axs[0].set_xlabel("timestamp")
-        axs[0].set_ylabel("motor power (%)")
-        axs[0].tick_params(labelbottom=True, labelleft=True, direction="in")
-        axs[0].set_title("Motor 1")
+    # Motor 1
+    motorAxs[0].plot(motorArray[0, :], motorArray[1, :], color="#1c7fff")
+    motorAxs[0].set_xlabel("timestamp")
+    motorAxs[0].set_ylabel("motor power (%)")
+    motorAxs[0].tick_params(labelbottom=True, labelleft=True, direction="in")
+    motorAxs[0].set_title("Motor 1")
 
-        axs[1].plot(data[0, :], data[2, :], color="#1c7fff")
-        axs[1].set_xlabel("timestamp")
-        axs[1].set_ylabel("motor power (%)")
-        axs[1].tick_params(labelbottom=True, labelleft=True, direction="in")
-        axs[1].set_title("Motor 2")
+    # Motor 2
+    motorAxs[1].plot(motorArray[0, :], motorArray[2, :], color="#1c7fff")
+    motorAxs[1].set_xlabel("timestamp")
+    motorAxs[1].set_ylabel("motor power (%)")
+    motorAxs[1].tick_params(labelbottom=True, labelleft=True, direction="in")
+    motorAxs[1].set_title("Motor 2")
 
-        axs[2].plot(data[0, :], data[3, :], color="#1c7fff")
-        axs[2].set_xlabel("timestamp")
-        axs[2].set_ylabel("motor power (%)")
-        axs[2].tick_params(labelbottom=True, labelleft=True, direction="in")
-        axs[2].set_title("Motor 3")
+    # Motor 3
+    motorAxs[2].plot(motorArray[0, :], motorArray[3, :], color="#1c7fff")
+    motorAxs[2].set_xlabel("timestamp")
+    motorAxs[2].set_ylabel("motor power (%)")
+    motorAxs[2].tick_params(labelbottom=True, labelleft=True, direction="in")
+    motorAxs[2].set_title("Motor 3")
 
-        axs[3].plot(data[0, :], data[4, :], color="#1c7fff")
-        axs[3].set_xlabel("timestamp")
-        axs[3].set_ylabel("motor power (%)")
-        axs[3].tick_params(labelbottom=True, labelleft=True, direction="in")
-        axs[3].set_title("Motor 4")
+    # Motor 4
+    motorAxs[3].plot(motorArray[0, :], motorArray[4, :], color="#1c7fff")
+    motorAxs[3].set_xlabel("timestamp")
+    motorAxs[3].set_ylabel("motor power (%)")
+    motorAxs[3].tick_params(labelbottom=True, labelleft=True, direction="in")
+    motorAxs[3].set_title("Motor 4")
 
-        axs[4].plot(data[0, :], data[5, :], color="#1c7fff")
-        axs[4].set_xlabel("timestamp")
-        axs[4].set_ylabel("andle (deg)")
-        axs[4].tick_params(labelbottom=True, labelleft=True, direction="in")
-        axs[4].set_title("Roll")
+    # Roll Rate
+    rateAxs[0].plot(rateArray[0, :], rateArray[1, :], color="#1c7fff")
+    rateAxs[0].plot(rateArray[0, :], rateArray[4, :], "--", color="#96c4ff")
+    rateAxs[0].set_xlabel("timestamp")
+    rateAxs[0].set_ylabel("angular velocity (rads/sec)")
+    rateAxs[0].tick_params(labelbottom=True, labelleft=True, direction="in")
+    rateAxs[0].set_title("Roll Rate")
 
-        axs[5].plot(data[0, :], data[6, :], color="#1c7fff")
-        axs[5].set_xlabel("timestamp")
-        axs[5].set_ylabel("angle (deg)")
-        axs[5].tick_params(labelbottom=True, labelleft=True, direction="in")
-        axs[5].set_title("Pitch")
+    # Pitch Rate
+    rateAxs[1].plot(rateArray[0, :], rateArray[2, :], color="#1c7fff")
+    rateAxs[1].plot(rateArray[0, :], rateArray[5, :], "--", color="#96c4ff")
+    rateAxs[1].set_xlabel("timestamp")
+    rateAxs[1].set_ylabel("angular velocity (rads/sec)")
+    rateAxs[1].tick_params(labelbottom=True, labelleft=True, direction="in")
+    rateAxs[1].set_title("Pitch Rate")
 
-        # fig.tight_layout()
-        fig.suptitle(f"Crazyflie Motor Power and Attitude ({round(1000/LOGT)} Hz sampling)")
+    # Yaw Rate
+    rateAxs[2].plot(rateArray[0, :], rateArray[3, :], color="#1c7fff")
+    rateAxs[2].plot(rateArray[0, :], rateArray[6, :], "--", color="#96c4ff")
+    rateAxs[2].set_xlabel("timestamp")
+    rateAxs[2].set_ylabel("angular velocity (rads/sec)")
+    rateAxs[2].tick_params(labelbottom=True, labelleft=True, direction="in")
+    rateAxs[2].set_title("Yaw Rate")
 
-    elif LOGGING == "pitch":
-        fig, axs = plt.subplots(1, 2, sharex=True, sharey=True)
+    # Roll
+    attitudeAxs[0].plot(attitudeArray[0, :], attitudeArray[1, :], color="#1c7fff")
+    attitudeAxs[0].plot(attitudeArray[0, :], attitudeArray[4, :], "--", color="#96c4ff")
+    attitudeAxs[0].set_xlabel("timestamp")
+    attitudeAxs[0].set_ylabel("attitude (deg)")
+    attitudeAxs[0].tick_params(labelbottom=True, labelleft=True, direction="in")
+    attitudeAxs[0].set_title("Roll")
 
-        axs[0].plot(data[0, :], data[2, :] * DEG2RAD, "--", color="#96c4ff")
-        axs[0].plot(data[0, :], data[1, :] / 1000, color="#1c7fff")
-        axs[0].set_xlabel("timestamp")
-        axs[0].set_ylabel("angular velocity (rads/sec)")
-        axs[0].tick_params(labelbottom=True, labelleft=True, direction="in")
-        axs[0].set_title("Pitch Rate")
+    # Pitch
+    attitudeAxs[1].plot(attitudeArray[0, :], attitudeArray[2, :], color="#1c7fff")
+    attitudeAxs[1].plot(attitudeArray[0, :], attitudeArray[5, :], "--", color="#96c4ff")
+    attitudeAxs[1].set_xlabel("timestamp")
+    attitudeAxs[1].set_ylabel("attitude (deg)")
+    attitudeAxs[1].tick_params(labelbottom=True, labelleft=True, direction="in")
+    attitudeAxs[1].set_title("Pitch")
 
-        axs[1].plot(data[0, :], data[4, :] * DEG2RAD, "--", color="#96c4ff")
-        axs[1].plot(data[0, :], data[3, :] * DEG2RAD, color="#1c7fff")
-        axs[1].set_xlabel("timestamp")
-        axs[1].set_ylabel("angle (rad)")
-        axs[1].tick_params(labelbottom=True, labelleft=True, direction="in")
-        axs[1].set_title("Pitch")
+    # Yaw
+    attitudeAxs[2].plot(attitudeArray[0, :], attitudeArray[3, :], color="#1c7fff")
+    attitudeAxs[2].plot(attitudeArray[0, :], attitudeArray[6, :], "--", color="#96c4ff")
+    attitudeAxs[2].set_xlabel("timestamp")
+    attitudeAxs[2].set_ylabel("attitude (deg)")
+    attitudeAxs[2].tick_params(labelbottom=True, labelleft=True, direction="in")
+    attitudeAxs[2].set_title("Yaw")
 
-        fig.suptitle(f"Crazyflie Pitch ({round(1000/LOGT)} Hz sampling)")
-
-    elif LOGGING == "rates":
-        fig, axs = plt.subplots(1, 4, sharex=True, sharey=True)
-
-        axs[0].plot(data[0, :], data[3, :] * DEG2RAD, "--", color="#96c4ff")
-        axs[0].plot(data[0, :], data[1, :] / 1000, color="#1c7fff")
-        axs[0].set_xlabel("timestamp")
-        axs[0].set_ylabel("angular velocity (rads/sec)")
-        axs[0].tick_params(labelbottom=True, labelleft=True, direction="in")
-        axs[0].set_title("Roll Rate")
-
-        axs[1].plot(data[0, :], data[4, :] * DEG2RAD, "--", color="#96c4ff")
-        axs[1].plot(data[0, :], data[2, :] / 1000, color="#1c7fff")
-        axs[1].set_xlabel("timestamp")
-        axs[1].set_ylabel("angular velocity (rads/sec)")
-        axs[1].tick_params(labelbottom=True, labelleft=True, direction="in")
-        axs[1].set_title("Pitch Rate")
-
-        axs[2].plot(data[0, :], data[5, :] * DEG2RAD, color="#1c7fff")
-        axs[2].set_xlabel("timestamp")
-        axs[2].set_ylabel("angle (deg)")
-        axs[2].tick_params(labelbottom=True, labelleft=True, direction="in")
-        axs[2].set_title("Roll")
-
-        axs[3].plot(data[0, :], data[6, :] * DEG2RAD, color="#1c7fff")
-        axs[3].set_xlabel("timestamp")
-        axs[3].set_ylabel("angle (deg)")
-        axs[3].tick_params(labelbottom=True, labelleft=True, direction="in")
-        axs[3].set_title("Pitch")
-
-        # fig.tight_layout()
-        fig.suptitle(f"Crazyflie Rates ({round(1000/LOGT)} Hz sampling)")
+    motorFig.suptitle(f"Crazyflie Motor Power and Attitude ({round(1000/LOGT)} Hz sampling)")
+    rateFig.suptitle(f"Crazyflie Rates ({round(1000/LOGT)} Hz sampling)")
+    attitudeFig.suptitle(f"Crazyflie Rates ({round(1000/LOGT)} Hz sampling)")
 
     plt.show()
 
 
 def configLog():
 
-    if LOGGING == "motors":
-        logOut = LogConfig(name="Motors", period_in_ms=LOGT)
-        logOut.add_variable("motor.m1", "uint32_t")
-        logOut.add_variable("motor.m2", "uint32_t")
-        logOut.add_variable("motor.m3", "uint32_t")
-        logOut.add_variable("motor.m4", "uint32_t")
-        logOut.add_variable("stabilizer.roll", "float")
-        logOut.add_variable("stabilizer.pitch", "float")
+    logMotors = LogConfig(name="Motors", period_in_ms=LOGT)
+    logMotors.add_variable("motor.m1", "uint32_t")
+    logMotors.add_variable("motor.m2", "uint32_t")
+    logMotors.add_variable("motor.m3", "uint32_t")
+    logMotors.add_variable("motor.m4", "uint32_t")
 
-    elif LOGGING == "rates":
-        logOut = LogConfig(name="Rates", period_in_ms=LOGT)
-        logOut.add_variable("stateEstimateZ.rateRoll", "int16_t")  # milliradians / sec
-        logOut.add_variable("stateEstimateZ.ratePitch", "int16_t")  # milliradians / sec
-        logOut.add_variable("controller.rollRate", "float")
-        logOut.add_variable("controller.pitchRate", "float")
-        logOut.add_variable("stabilizer.roll", "float")
-        logOut.add_variable("stabilizer.pitch", "float")
+    logRates = LogConfig(name="Rates", period_in_ms=LOGT)
+    logRates.add_variable("stateEstimateZ.rateRoll", "int16_t")  # milliradians / sec
+    logRates.add_variable("stateEstimateZ.ratePitch", "int16_t")  # milliradians / sec
+    logRates.add_variable("stateEstimateZ.rateYaw", "int16_t")
+    logRates.add_variable("controller.rollRate", "float")
+    logRates.add_variable("controller.pitchRate", "float")
+    logRates.add_variable("controller.yawRate", "float")
 
-    elif LOGGING == "pitch":
-        logOut = LogConfig(name="Pitch", period_in_ms=LOGT)
-        logOut.add_variable("controller.pitch", "float")
-        logOut.add_variable("stabilizer.pitch", "float")
-        logOut.add_variable("stateEstimateZ.ratePitch", "int16_t")  # milliradians / sec
-        logOut.add_variable("controller.pitchRate", "float")
+    logAttitude = LogConfig(name="Attitude", period_in_ms=LOGT)
+    logAttitude.add_variable("controller.roll", "float")
+    logAttitude.add_variable("controller.pitch", "float")
+    logAttitude.add_variable("controller.yaw", "float")
+    logAttitude.add_variable("stabilizer.roll", "float")
+    logAttitude.add_variable("stabilizer.pitch", "float")
+    logAttitude.add_variable("stabilizer.yaw", "float")
 
-    return logOut
+    return logMotors, logRates, logAttitude
 
 
 # Only output errors from the logging framework
@@ -225,7 +213,7 @@ logging.basicConfig(level=logging.ERROR)
 cflib.crtp.init_drivers(enable_debug_driver=False)
 
 # Configure logging
-myLog = configLog()
+[logMotors, logRates, logAttitude] = configLog()
 
 
 # Scan for Crazyflies in range of the antenna:
@@ -244,10 +232,15 @@ else:
     with SyncCrazyflie(URI, cf=Crazyflie(rw_cache="./cache")) as scf:
         cf = scf.cf
         cf.param.add_update_callback(group="deck", name="bcFlow2", cb=param_deck)
-        simple_log_async(scf, myLog)
+        simple_log_async(scf, logMotors)
+        simple_log_async(scf, logRates)
+        simple_log_async(scf, logAttitude)
 
         # initialize logging and arm props
-        myLog.start()
+        logMotors.start()
+        logRates.start()
+        logAttitude.start()
+
         cf.param.set_value("system.forceArm", 1)
         time.sleep(5)
 
@@ -260,7 +253,6 @@ else:
 
             elapsed = time.time() - t0
             time.sleep(0.05)
-
 
         print("Changing gains")
         # Change gains after takeoff
@@ -284,8 +276,12 @@ else:
         # land, disarm props, and stop logging data
         cf.commander.send_hover_setpoint(0, 0, 0, 0.1)
         cf.param.set_value("system.forceArm", 0)
-        myLog.stop()
+        logMotors.stop()
+        logRates.stop()
+        logAttitude.stop()
 
         # plot data
-        out = myData.getData()
-        plot(out)
+        motor = motorData.getData()
+        rate = rateData.getData()
+        attitude = attitudeData.getData()
+        plot(motor, rate, attitude)

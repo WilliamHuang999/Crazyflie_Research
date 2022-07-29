@@ -36,7 +36,7 @@ URI = "radio://0/80/2M/"
 # Create objects for storing data
 motorData = Data(10000, 4)
 rateData = Data(10000, 6)
-attitudeData = Data(10000, 6, unwrap=[0, 1, 2, 3, 4, 5])
+attitudeData = Data(10000, 6, unwrap=[2])
 velocityData = Data(10000, 6)
 positionData = Data(10000, 6)
 
@@ -300,19 +300,18 @@ def configLog():
 
 
 def set_gains(cf, group, val, kp, ki, kd):
-    
+
     if group == "pid_rate" or group == "pid_attitude":
         prefix = group + "." + val
         cf.param.set_value(prefix + "_kp", kp)
         cf.param.set_value(prefix + "_ki", ki)
         cf.param.set_value(prefix + "_kd", kd)
-    
+
     elif group == "velCtlPid" or group == "posCtlPid":
         prefix = group + "." + val
         cf.param.set_value(prefix + "Kp", kp)
         cf.param.set_value(prefix + "Ki", ki)
         cf.param.set_value(prefix + "Kd", kd)
-
 
 
 def get_gains(cf, group, val):
@@ -322,13 +321,13 @@ def get_gains(cf, group, val):
         kp = cf.param.get_value(prefix + "_kp")
         ki = cf.param.get_value(prefix + "_ki")
         kd = cf.param.get_value(prefix + "_kd")
-    
+
     elif group == "velCtlPid" or group == "posCtlPid":
         prefix = group + "." + val
         kp = cf.param.get_value(prefix + "Kp")
         ki = cf.param.get_value(prefix + "Ki")
         kd = cf.param.get_value(prefix + "Kd")
-    
+
     else:
         print("Not a PID group")
         return -1, -1, -1
